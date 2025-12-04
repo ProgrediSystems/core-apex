@@ -1,6 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import {
   TestTube2,
   TrendingUp,
@@ -16,19 +18,21 @@ import {
   BarChart3,
   Globe,
   Cpu,
-  GitBranch
+  GitBranch,
+  Mail,
+  ChevronLeft,
+  ChevronRight,
+  Play,
+  AlertTriangle
 } from 'lucide-react';
 
 export default function APEXPresentationPage() {
+  const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [animateMetrics, setAnimateMetrics] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setAnimateMetrics(true), 500);
-    return () => clearTimeout(timer);
-  }, [currentSlide]);
-
   const slides = [
+    'title',
     'problem',
     'solution',
     'architecture',
@@ -38,18 +42,41 @@ export default function APEXPresentationPage() {
     'team'
   ];
 
-  const nextSlide = () => {
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimateMetrics(true), 500);
+    return () => clearTimeout(timer);
+  }, [currentSlide]);
+
+  const nextSlide = useCallback(() => {
     if (currentSlide < slides.length - 1) {
       setCurrentSlide(currentSlide + 1);
       setAnimateMetrics(false);
     }
-  };
+  }, [currentSlide, slides.length]);
 
-  const prevSlide = () => {
+  const prevSlide = useCallback(() => {
     if (currentSlide > 0) {
       setCurrentSlide(currentSlide - 1);
       setAnimateMetrics(false);
     }
+  }, [currentSlide]);
+
+  // Add keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 'ArrowRight') {
+        nextSlide();
+      } else if (event.key === 'ArrowLeft') {
+        prevSlide();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [nextSlide, prevSlide]);
+
+  const handleLiveDemo = () => {
+    router.push('/');
   };
 
   return (
@@ -57,11 +84,23 @@ export default function APEXPresentationPage() {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-black bg-opacity-50 backdrop-blur-lg border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <TestTube2 className="h-8 w-8 text-indigo-400" />
-            <div>
-              <h1 className="text-xl font-bold">Core APEX</h1>
-              <p className="text-xs text-gray-400">Navy-AIAT Phase 2 Presentation</p>
+          <div className="flex items-center space-x-4">
+            {/* Progredi AI Logo */}
+            <img
+              src="/progredi-logo-white.png"
+              alt="Progredi AI"
+              className="h-8"
+              onError={(e) => {
+                // Fallback if logo doesn't exist
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            <div className="flex items-center space-x-3">
+              <TestTube2 className="h-8 w-8 text-indigo-400" />
+              <div>
+                <h1 className="text-xl font-bold">Core APEX</h1>
+                <p className="text-xs text-gray-400">Navy-AIAT Phase 2 • CAGE: 10X15</p>
+              </div>
             </div>
           </div>
           <div className="flex items-center space-x-4">
@@ -72,16 +111,18 @@ export default function APEXPresentationPage() {
               <button
                 onClick={prevSlide}
                 disabled={currentSlide === 0}
-                className="px-3 py-1 bg-white/10 rounded hover:bg-white/20 disabled:opacity-50"
+                className="p-2 bg-white/10 rounded hover:bg-white/20 disabled:opacity-50 transition"
+                aria-label="Previous slide"
               >
-                ←
+                <ChevronLeft className="h-4 w-4" />
               </button>
               <button
                 onClick={nextSlide}
                 disabled={currentSlide === slides.length - 1}
-                className="px-3 py-1 bg-white/10 rounded hover:bg-white/20 disabled:opacity-50"
+                className="p-2 bg-white/10 rounded hover:bg-white/20 disabled:opacity-50 transition"
+                aria-label="Next slide"
               >
-                →
+                <ChevronRight className="h-4 w-4" />
               </button>
             </div>
           </div>
@@ -91,541 +132,465 @@ export default function APEXPresentationPage() {
       {/* Main Content */}
       <main className="pt-24 pb-12 px-6">
         <div className="max-w-7xl mx-auto">
-          {/* Slide 1: The Problem */}
+
+          {/* Slide 0: Title */}
           {currentSlide === 0 && (
+            <div className="min-h-[80vh] flex flex-col justify-center items-center text-center">
+              <div className="mb-8">
+                <TestTube2 className="h-24 w-24 text-indigo-400 mx-auto mb-6" />
+                <h1 className="text-7xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+                  Core APEX
+                </h1>
+                <p className="text-3xl text-gray-300 mb-2">
+                  Automated Performance & Evaluation eXpert
+                </p>
+                <p className="text-xl text-gray-400">
+                  Transforming Navy Testing with AI-Powered Automation
+                </p>
+              </div>
+
+              <div className="border-t border-white/20 pt-8 mt-8">
+                <p className="text-lg text-gray-300 mb-2">Navy-AIAT Prize Challenge • Phase 2</p>
+                <p className="text-md text-gray-400">Progredi AI • CAGE Code: 10X15</p>
+              </div>
+
+              <div className="mt-12">
+                <p className="text-sm text-indigo-300">
+                  Press → arrow key or click next to continue
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Slide 1: The Problem */}
+          {currentSlide === 1 && (
             <div className="min-h-[80vh] flex flex-col justify-center">
               <h2 className="text-5xl font-bold mb-8 bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
                 The Critical Problem
               </h2>
 
-              <div className="grid md:grid-cols-2 gap-12">
-                <div>
-                  <div className="text-7xl font-bold text-red-400 mb-4">60-70%</div>
-                  <p className="text-2xl text-gray-300 mb-6">
-                    of testing time spent writing and maintaining scripts
-                  </p>
-
-                  <div className="space-y-4">
-                    <div className="flex items-start space-x-3">
-                      <div className="w-2 h-2 bg-red-400 rounded-full mt-2"></div>
-                      <div>
-                        <h4 className="text-xl font-semibold mb-1">Manual Script Creation</h4>
-                        <p className="text-gray-400">400+ hours per sprint for comprehensive test coverage</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="w-2 h-2 bg-red-400 rounded-full mt-2"></div>
-                      <div>
-                        <h4 className="text-xl font-semibold mb-1">Constant Maintenance</h4>
-                        <p className="text-gray-400">Tests break with every code change</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start space-x-3">
-                      <div className="w-2 h-2 bg-red-400 rounded-full mt-2"></div>
-                      <div>
-                        <h4 className="text-xl font-semibold mb-1">Late Defect Discovery</h4>
-                        <p className="text-gray-400">Critical bugs found in production</p>
-                      </div>
-                    </div>
-                  </div>
+              <div className="grid md:grid-cols-2 gap-8 mb-12">
+                <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-6">
+                  <AlertTriangle className="h-8 w-8 text-red-400 mb-4" />
+                  <h3 className="text-2xl font-bold mb-4">PEO MLB Reality</h3>
+                  <ul className="space-y-3 text-gray-300">
+                    <li className="flex items-start">
+                      <span className="text-red-400 mr-2">•</span>
+                      <span>60-70% of time spent writing test scripts</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-red-400 mr-2">•</span>
+                      <span>400+ hours per sprint for coverage</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-red-400 mr-2">•</span>
+                      <span>Every code change breaks multiple tests</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-red-400 mr-2">•</span>
+                      <span>Critical defects still reach production</span>
+                    </li>
+                  </ul>
                 </div>
 
-                <div className="flex items-center justify-center">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-red-500 blur-3xl opacity-20"></div>
-                    <div className="relative bg-black/50 backdrop-blur-xl rounded-2xl p-8 border border-red-500/20">
-                      <h3 className="text-2xl font-bold mb-4">PEO MLB Impact</h3>
-                      <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Annual Testing Cost</span>
-                          <span className="font-bold text-red-400">$12M+</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Deployment Delays</span>
-                          <span className="font-bold text-orange-400">3-6 months</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-400">Mission Readiness Risk</span>
-                          <span className="font-bold text-red-500">HIGH</span>
-                        </div>
-                      </div>
+                <div className="bg-orange-900/20 border border-orange-500/30 rounded-xl p-6">
+                  <DollarSign className="h-8 w-8 text-orange-400 mb-4" />
+                  <h3 className="text-2xl font-bold mb-4">Mission Impact</h3>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">Annual Cost</span>
+                      <span className="text-2xl font-bold text-orange-400">$12M+</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">Deployment Delays</span>
+                      <span className="text-2xl font-bold text-orange-400">3-6 months</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">Fleet Readiness Impact</span>
+                      <span className="text-2xl font-bold text-red-400">CRITICAL</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="mt-12 p-6 bg-red-500/10 border border-red-500/30 rounded-xl">
-                <p className="text-xl text-center">
-                  "Testing bottlenecks are directly impacting Navy operational readiness and modernization efforts"
+              <div className="bg-gradient-to-r from-red-600/20 to-orange-600/20 border border-white/10 rounded-xl p-6">
+                <p className="text-xl text-center font-semibold">
+                  "This isn't just inefficiency - it's a strategic vulnerability affecting our warfighters"
                 </p>
               </div>
             </div>
           )}
 
           {/* Slide 2: The Solution */}
-          {currentSlide === 1 && (
+          {currentSlide === 2 && (
             <div className="min-h-[80vh] flex flex-col justify-center">
               <h2 className="text-5xl font-bold mb-8 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-                Core APEX: The Solution
+                Core APEX: The Game Changer
               </h2>
 
-              <div className="text-center mb-12">
-                <p className="text-3xl text-gray-300">
-                  AI-Powered Automated Testing that transforms requirements into executed tests in minutes
+              <div className="grid md:grid-cols-3 gap-6 mb-12">
+                <div className={`bg-gradient-to-br from-green-900/30 to-green-800/20 border border-green-500/30 rounded-xl p-6 transform transition-all duration-500 ${animateMetrics ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
+                  <TrendingUp className="h-10 w-10 text-green-400 mb-4" />
+                  <div className="text-4xl font-bold text-green-400 mb-2">90%</div>
+                  <div className="text-lg font-semibold mb-2">Time Reduction</div>
+                  <p className="text-sm text-gray-400">From 400 to 40 hours per sprint</p>
+                </div>
+
+                <div className={`bg-gradient-to-br from-blue-900/30 to-blue-800/20 border border-blue-500/30 rounded-xl p-6 transform transition-all duration-700 ${animateMetrics ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
+                  <Target className="h-10 w-10 text-blue-400 mb-4" />
+                  <div className="text-4xl font-bold text-blue-400 mb-2">75%</div>
+                  <div className="text-lg font-semibold mb-2">Defect Prediction</div>
+                  <p className="text-sm text-gray-400">AI predicts issues before they occur</p>
+                </div>
+
+                <div className={`bg-gradient-to-br from-purple-900/30 to-purple-800/20 border border-purple-500/30 rounded-xl p-6 transform transition-all duration-900 ${animateMetrics ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
+                  <DollarSign className="h-10 w-10 text-purple-400 mb-4" />
+                  <div className="text-4xl font-bold text-purple-400 mb-2">$2M+</div>
+                  <div className="text-lg font-semibold mb-2">Year 1 Savings</div>
+                  <p className="text-sm text-gray-400">Direct cost reduction guaranteed</p>
+                </div>
+              </div>
+
+              <div className="bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border border-white/10 rounded-xl p-8">
+                <h3 className="text-2xl font-bold mb-4">How It Works</h3>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <p className="text-lg mb-2 text-gray-300">You Write:</p>
+                    <div className="bg-black/30 rounded-lg p-4 font-mono text-sm">
+                      "System shall authenticate users with CAC cards within 3 seconds"
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-lg mb-2 text-gray-300">We Generate:</p>
+                    <ul className="text-sm space-y-1 text-gray-400">
+                      <li>✓ Positive test cases</li>
+                      <li>✓ Negative test cases</li>
+                      <li>✓ Edge cases & boundaries</li>
+                      <li>✓ Performance tests</li>
+                      <li>✓ Security validations</li>
+                    </ul>
+                  </div>
+                </div>
+                <p className="text-center mt-6 text-lg font-semibold text-indigo-300">
+                  When code changes, tests automatically adapt - zero maintenance burden
                 </p>
-              </div>
-
-              <div className="grid md:grid-cols-3 gap-8">
-                <div className={`bg-gradient-to-br from-green-500/20 to-green-600/10 p-8 rounded-2xl border border-green-500/30 transform transition-all duration-700 ${
-                  animateMetrics ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-                }`}>
-                  <div className="text-5xl font-bold text-green-400 mb-4">90%</div>
-                  <h3 className="text-xl font-semibold mb-2">Test Development Reduction</h3>
-                  <p className="text-gray-400">From 400 hours to 40 hours per sprint</p>
-                </div>
-
-                <div className={`bg-gradient-to-br from-blue-500/20 to-blue-600/10 p-8 rounded-2xl border border-blue-500/30 transform transition-all duration-700 delay-100 ${
-                  animateMetrics ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-                }`}>
-                  <div className="text-5xl font-bold text-blue-400 mb-4">75%</div>
-                  <h3 className="text-xl font-semibold mb-2">Defect Prediction Accuracy</h3>
-                  <p className="text-gray-400">AI identifies issues before production</p>
-                </div>
-
-                <div className={`bg-gradient-to-br from-purple-500/20 to-purple-600/10 p-8 rounded-2xl border border-purple-500/30 transform transition-all duration-700 delay-200 ${
-                  animateMetrics ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-                }`}>
-                  <div className="text-5xl font-bold text-purple-400 mb-4">$2M+</div>
-                  <h3 className="text-xl font-semibold mb-2">Annual Savings</h3>
-                  <p className="text-gray-400">Direct cost reduction in Year 1</p>
-                </div>
-              </div>
-
-              <div className="mt-12 grid md:grid-cols-2 gap-8">
-                <div className="flex items-start space-x-4">
-                  <CheckCircle className="h-8 w-8 text-green-400 flex-shrink-0" />
-                  <div>
-                    <h4 className="text-xl font-semibold mb-2">Natural Language to Tests</h4>
-                    <p className="text-gray-400">Import requirements from JIRA, DOORS, or documents and automatically generate comprehensive test suites</p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-4">
-                  <CheckCircle className="h-8 w-8 text-green-400 flex-shrink-0" />
-                  <div>
-                    <h4 className="text-xl font-semibold mb-2">Self-Maintaining Tests</h4>
-                    <p className="text-gray-400">Monitors Git for code changes and automatically updates affected test scripts</p>
-                  </div>
-                </div>
               </div>
             </div>
           )}
 
           {/* Slide 3: Architecture */}
-          {currentSlide === 2 && (
+          {currentSlide === 3 && (
             <div className="min-h-[80vh] flex flex-col justify-center">
-              <h2 className="text-5xl font-bold mb-8 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+              <h2 className="text-5xl font-bold mb-8 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 Six Specialized AI Agents
               </h2>
 
               <div className="grid md:grid-cols-3 gap-6">
                 {[
                   {
-                    icon: Globe,
                     name: 'Requirements Agent',
-                    color: 'blue',
-                    tasks: ['Parse JIRA/DOORS', 'Extract from documents', 'Create traceability matrix']
+                    icon: '📋',
+                    description: 'Ingests from JIRA, DOORS, PDFs - identifies ambiguities'
                   },
                   {
-                    icon: Cpu,
                     name: 'Test Design Agent',
-                    color: 'green',
-                    tasks: ['Generate test cases', 'Create scripts (Python/C#/JS)', 'Coverage analysis']
+                    icon: '🧪',
+                    description: 'Generates 5-10 test scenarios per requirement'
                   },
                   {
-                    icon: Zap,
                     name: 'Execution Agent',
-                    color: 'orange',
-                    tasks: ['Parallel execution', 'CI/CD integration', 'Real-time results']
+                    icon: '⚡',
+                    description: 'Runs 500 tests in parallel with CI/CD integration'
                   },
                   {
-                    icon: BarChart3,
                     name: 'Analysis Agent',
-                    color: 'purple',
-                    tasks: ['Predictive analytics', 'Root cause analysis', 'Defect clustering']
+                    icon: '🔍',
+                    description: '75% accuracy predicting defects before they occur'
                   },
                   {
-                    icon: GitBranch,
                     name: 'Maintenance Agent',
-                    color: 'yellow',
-                    tasks: ['Git monitoring', 'Auto-update tests', 'Impact analysis']
+                    icon: '🔧',
+                    description: 'Auto-updates tests when code changes - saves 100+ hrs/month'
                   },
                   {
-                    icon: Shield,
                     name: 'Compliance Agent',
-                    color: 'red',
-                    tasks: ['Section 508', 'DISA STIGs', 'RMF documentation']
+                    icon: '✅',
+                    description: 'Section 508, DISA STIGs, RMF docs automated'
                   }
                 ].map((agent, index) => (
                   <div
                     key={agent.name}
-                    className={`bg-black/30 backdrop-blur-xl rounded-xl p-6 border transform transition-all duration-700 ${
-                      animateMetrics ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-                    }`}
-                    style={{
-                      borderColor: `rgb(${agent.color === 'blue' ? '59, 130, 246' :
-                                         agent.color === 'green' ? '34, 197, 94' :
-                                         agent.color === 'orange' ? '251, 146, 60' :
-                                         agent.color === 'purple' ? '168, 85, 247' :
-                                         agent.color === 'yellow' ? '250, 204, 21' : '239, 68, 68'} / 0.5)`,
-                      transitionDelay: `${index * 100}ms`
-                    }}
+                    className={`bg-gradient-to-br from-indigo-900/30 to-purple-900/20 border border-indigo-500/30 rounded-xl p-6 transform transition-all ${animateMetrics ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
+                    style={{ transitionDelay: `${index * 150}ms` }}
                   >
-                    <div className="flex items-center space-x-3 mb-4">
-                      <agent.icon className={`h-8 w-8 text-${agent.color}-400`} />
-                      <h3 className="text-lg font-semibold">{agent.name}</h3>
-                    </div>
-                    <ul className="space-y-2 text-sm text-gray-400">
-                      {agent.tasks.map(task => (
-                        <li key={task} className="flex items-start space-x-2">
-                          <div className={`w-1.5 h-1.5 bg-${agent.color}-400 rounded-full mt-1.5`}></div>
-                          <span>{task}</span>
-                        </li>
-                      ))}
-                    </ul>
+                    <div className="text-3xl mb-3">{agent.icon}</div>
+                    <h3 className="text-lg font-bold mb-2">{agent.name}</h3>
+                    <p className="text-sm text-gray-400">{agent.description}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-12 p-6 bg-indigo-500/10 border border-indigo-500/30 rounded-xl">
-                <div className="flex items-center justify-center space-x-8">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-indigo-400">Claude Sonnet 4.0</div>
-                    <p className="text-gray-400">Powered by Anthropic AI</p>
+              <div className="mt-8 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 border border-white/10 rounded-xl p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-bold mb-2">Powered by Claude Sonnet 4.0</h3>
+                    <p className="text-gray-300">AWS GovCloud • FedRAMP Ready • Human-in-the-Loop Governance</p>
                   </div>
-                  <div className="text-2xl">+</div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-indigo-400">AWS GovCloud</div>
-                    <p className="text-gray-400">FedRAMP Compliant</p>
-                  </div>
-                  <div className="text-2xl">+</div>
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-indigo-400">Human-in-the-Loop</div>
-                    <p className="text-gray-400">All outputs reviewed</p>
-                  </div>
+                  <Shield className="h-12 w-12 text-indigo-400" />
                 </div>
               </div>
             </div>
           )}
 
           {/* Slide 4: Live Demo */}
-          {currentSlide === 3 && (
+          {currentSlide === 4 && (
             <div className="min-h-[80vh] flex flex-col justify-center">
-              <h2 className="text-5xl font-bold mb-8 bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-                Live Demo: See It In Action
+              <h2 className="text-5xl font-bold mb-8 bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+                Live Demonstration
               </h2>
 
-              <div className="bg-black/30 backdrop-blur-xl rounded-2xl p-8 border border-yellow-500/30">
-                <div className="text-center mb-8">
-                  <p className="text-2xl text-gray-300 mb-4">
-                    Watch Core APEX transform 47 requirements into 127 executed tests in under 5 minutes
-                  </p>
-                  <button className="px-8 py-4 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl text-xl font-bold hover:from-yellow-600 hover:to-orange-600 transition transform hover:scale-105 flex items-center space-x-3 mx-auto">
-                    <Zap className="h-6 w-6" />
-                    <span>Launch Live Demo</span>
-                  </button>
-                </div>
+              <div className="bg-gradient-to-br from-indigo-900/30 to-blue-900/20 border border-indigo-500/30 rounded-xl p-8">
+                <h3 className="text-2xl font-bold mb-6">Watch Core APEX in Action</h3>
 
-                <div className="grid md:grid-cols-4 gap-6">
-                  {[
-                    { step: '1', title: 'Import Requirements', time: '15 sec', detail: 'From JIRA epic MLB-2024-15' },
-                    { step: '2', title: 'Generate Tests', time: '45 sec', detail: '127 comprehensive test cases' },
-                    { step: '3', title: 'Execute Suite', time: '3 min', detail: 'Parallel execution in containers' },
-                    { step: '4', title: 'Analyze Results', time: '30 sec', detail: 'Defect prediction & insights' }
-                  ].map((item, index) => (
-                    <div
-                      key={item.step}
-                      className={`text-center transform transition-all duration-700 ${
-                        animateMetrics ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'
-                      }`}
-                      style={{ transitionDelay: `${index * 150}ms` }}
-                    >
-                      <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-3">
-                        {item.step}
+                <div className="grid md:grid-cols-2 gap-8 mb-8">
+                  <div>
+                    <h4 className="text-lg font-semibold mb-4 text-indigo-300">What You'll See:</h4>
+                    <ul className="space-y-2 text-gray-300">
+                      <li className="flex items-start">
+                        <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
+                        <span>Real JIRA requirements from MLB-2024 project</span>
+                      </li>
+                      <li className="flex items-start">
+                        <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
+                        <span>47 requirements → 127 test cases in seconds</span>
+                      </li>
+                      <li className="flex items-start">
+                        <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
+                        <span>Human review for critical test cases</span>
+                      </li>
+                      <li className="flex items-start">
+                        <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
+                        <span>Parallel execution achieving 94% pass rate</span>
+                      </li>
+                      <li className="flex items-start">
+                        <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
+                        <span>Compliance verification (Section 508, FIPS, STIGs)</span>
+                      </li>
+                      <li className="flex items-start">
+                        <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
+                        <span>Reports saved to Core Vault for collaboration</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div>
+                    <h4 className="text-lg font-semibold mb-4 text-indigo-300">Key Metrics:</h4>
+                    <div className="space-y-3">
+                      <div className="bg-black/30 rounded-lg p-3">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Time to Generate Tests</span>
+                          <span className="text-xl font-bold text-green-400">4.2 min</span>
+                        </div>
                       </div>
-                      <h4 className="font-semibold mb-1">{item.title}</h4>
-                      <p className="text-sm text-yellow-400 mb-1">{item.time}</p>
-                      <p className="text-xs text-gray-400">{item.detail}</p>
+                      <div className="bg-black/30 rounded-lg p-3">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Requirement Coverage</span>
+                          <span className="text-xl font-bold text-blue-400">95%</span>
+                        </div>
+                      </div>
+                      <div className="bg-black/30 rounded-lg p-3">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Compliance Score</span>
+                          <span className="text-xl font-bold text-purple-400">98%</span>
+                        </div>
+                      </div>
                     </div>
-                  ))}
+                  </div>
                 </div>
 
-                <div className="mt-8 grid md:grid-cols-3 gap-4">
-                  <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 text-center">
-                    <div className="text-3xl font-bold text-green-400">94%</div>
-                    <p className="text-sm text-gray-400">Tests Passed</p>
-                  </div>
-                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4 text-center">
-                    <div className="text-3xl font-bold text-red-400">8</div>
-                    <p className="text-sm text-gray-400">Defects Found</p>
-                  </div>
-                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 text-center">
-                    <div className="text-3xl font-bold text-blue-400">360h</div>
-                    <p className="text-sm text-gray-400">Time Saved</p>
-                  </div>
-                </div>
+                <button
+                  onClick={handleLiveDemo}
+                  className="w-full bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-lg transition transform hover:scale-105 flex items-center justify-center space-x-3"
+                >
+                  <Play className="h-6 w-6" />
+                  <span className="text-xl">Launch Live Demo</span>
+                </button>
+
+                <p className="text-center text-sm text-gray-400 mt-4">
+                  This is not a mockup - this is our working MVP running on AWS GovCloud
+                </p>
               </div>
             </div>
           )}
 
-          {/* Slide 5: ROI */}
-          {currentSlide === 4 && (
+          {/* Slide 5: ROI & Impact */}
+          {currentSlide === 5 && (
             <div className="min-h-[80vh] flex flex-col justify-center">
               <h2 className="text-5xl font-bold mb-8 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
                 Return on Investment
               </h2>
 
-              <div className="grid md:grid-cols-2 gap-12">
-                <div>
-                  <h3 className="text-2xl font-semibold mb-6">Year 1 Savings</h3>
-
+              <div className="grid md:grid-cols-2 gap-8">
+                <div className="bg-gradient-to-br from-green-900/30 to-emerald-900/20 border border-green-500/30 rounded-xl p-8">
+                  <h3 className="text-2xl font-bold mb-6">Year 1 Impact</h3>
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center p-4 bg-black/30 rounded-lg">
-                      <span className="text-gray-400">Labor Cost Reduction</span>
-                      <span className="text-2xl font-bold text-green-400">$1.8M</span>
-                    </div>
-                    <div className="flex justify-between items-center p-4 bg-black/30 rounded-lg">
-                      <span className="text-gray-400">Defect Prevention Savings</span>
-                      <span className="text-2xl font-bold text-green-400">$450K</span>
-                    </div>
-                    <div className="flex justify-between items-center p-4 bg-black/30 rounded-lg">
-                      <span className="text-gray-400">Deployment Acceleration</span>
-                      <span className="text-2xl font-bold text-green-400">$350K</span>
-                    </div>
-                    <div className="flex justify-between items-center p-4 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-lg border border-green-500/30">
-                      <span className="text-xl font-semibold">Total Year 1 Savings</span>
-                      <span className="text-3xl font-bold text-green-400">$2.6M</span>
-                    </div>
-                  </div>
-
-                  <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/30 rounded-lg">
                     <div className="flex justify-between items-center">
-                      <span className="text-gray-400">Implementation Cost</span>
-                      <span className="text-xl text-blue-400">$650K</span>
+                      <span className="text-gray-300">Direct Cost Savings</span>
+                      <span className="text-2xl font-bold text-green-400">$2.1M</span>
                     </div>
-                    <div className="flex justify-between items-center mt-2 pt-2 border-t border-blue-500/30">
-                      <span className="font-semibold">Net Savings Year 1</span>
-                      <span className="text-2xl font-bold text-green-400">$1.95M</span>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">Time to Market</span>
+                      <span className="text-2xl font-bold text-blue-400">50% faster</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">Defect Reduction</span>
+                      <span className="text-2xl font-bold text-purple-400">65%</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-300">Test Coverage</span>
+                      <span className="text-2xl font-bold text-indigo-400">95%</span>
                     </div>
                   </div>
                 </div>
 
-                <div>
-                  <h3 className="text-2xl font-semibold mb-6">Operational Impact</h3>
-
-                  <div className="space-y-6">
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-gray-400">Test Coverage</span>
-                        <span className="text-green-400">95%</span>
-                      </div>
-                      <div className="w-full bg-gray-800 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-3 rounded-full" style={{width: '95%'}}></div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-gray-400">Defect Detection Rate</span>
-                        <span className="text-blue-400">75%</span>
-                      </div>
-                      <div className="w-full bg-gray-800 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-blue-500 to-cyan-500 h-3 rounded-full" style={{width: '75%'}}></div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <div className="flex justify-between mb-2">
-                        <span className="text-gray-400">Deployment Speed</span>
-                        <span className="text-purple-400">3x Faster</span>
-                      </div>
-                      <div className="w-full bg-gray-800 rounded-full h-3">
-                        <div className="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full" style={{width: '100%'}}></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-8 p-6 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl">
-                    <h4 className="text-xl font-semibold mb-3">5-Year Projection</h4>
-                    <div className="text-4xl font-bold text-green-400 mb-2">$15M+</div>
-                    <p className="text-gray-400">Cumulative savings with enterprise-wide adoption</p>
-                  </div>
+                <div className="bg-gradient-to-br from-blue-900/30 to-indigo-900/20 border border-blue-500/30 rounded-xl p-8">
+                  <h3 className="text-2xl font-bold mb-6">Strategic Value</h3>
+                  <ul className="space-y-3 text-gray-300">
+                    <li className="flex items-start">
+                      <Award className="h-5 w-5 text-yellow-400 mr-3 mt-0.5" />
+                      <span>Accelerate digital transformation across PEO MLB</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Globe className="h-5 w-5 text-blue-400 mr-3 mt-0.5" />
+                      <span>Enable rapid deployment to fleet operations</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Shield className="h-5 w-5 text-green-400 mr-3 mt-0.5" />
+                      <span>Improve mission readiness through quality</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Users className="h-5 w-5 text-purple-400 mr-3 mt-0.5" />
+                      <span>Upskill workforce to focus on innovation</span>
+                    </li>
+                  </ul>
                 </div>
+              </div>
+
+              <div className="mt-8 bg-gradient-to-r from-yellow-600/20 to-orange-600/20 border border-yellow-500/30 rounded-xl p-6">
+                <p className="text-xl text-center font-semibold">
+                  "ROI positive in 4 months • Full payback in 11 months"
+                </p>
               </div>
             </div>
           )}
 
           {/* Slide 6: Implementation Timeline */}
-          {currentSlide === 5 && (
+          {currentSlide === 6 && (
             <div className="min-h-[80vh] flex flex-col justify-center">
               <h2 className="text-5xl font-bold mb-8 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                12-Month Implementation Roadmap
+                12-Month Roadmap to Success
               </h2>
 
               <div className="space-y-6">
                 {[
                   {
-                    phase: 'Phase 1: Pilot Program',
+                    phase: 'Phase 1: Pilot',
                     months: 'Months 1-3',
-                    color: 'blue',
-                    deliverables: [
-                      'Deploy to AWS GovCloud',
-                      'JIRA & Azure DevOps integration',
-                      '100+ automated tests for pilot application',
-                      'Requirements & Test Design agents operational'
-                    ],
-                    milestone: '70% reduction in test development time'
+                    description: 'Deploy to AWS GovCloud, JIRA integration, 100+ automated tests',
+                    color: 'from-blue-600/20 to-indigo-600/20'
                   },
                   {
                     phase: 'Phase 2: Expansion',
                     months: 'Months 4-6',
-                    color: 'purple',
-                    deliverables: [
-                      'Scale to 5 applications',
-                      'DOORS & CAMEO integration',
-                      'Analysis & Maintenance agents deployed',
-                      'Power BI dashboards'
-                    ],
-                    milestone: '1000+ tests under automation'
+                    description: 'Scale to 5 applications, DOORS integration, predictive analytics',
+                    color: 'from-indigo-600/20 to-purple-600/20'
                   },
                   {
                     phase: 'Phase 3: Enterprise',
-                    months: 'Months 7-12',
-                    color: 'green',
-                    deliverables: [
-                      'FedRAMP Moderate ATO',
-                      'IL4 deployment for CUI',
-                      '20+ applications',
-                      '24/7 production support'
-                    ],
-                    milestone: '$2M+ verified annual savings'
+                    months: 'Months 7-9',
+                    description: 'PEO-wide deployment, FedRAMP certification, custom AI training',
+                    color: 'from-purple-600/20 to-pink-600/20'
+                  },
+                  {
+                    phase: 'Phase 4: Full Operations',
+                    months: 'Months 10-12',
+                    description: '50+ systems, autonomous testing, continuous improvement',
+                    color: 'from-pink-600/20 to-red-600/20'
                   }
                 ].map((phase, index) => (
                   <div
                     key={phase.phase}
-                    className={`bg-black/30 backdrop-blur-xl rounded-xl p-6 border transform transition-all duration-700 ${
-                      animateMetrics ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'
-                    }`}
-                    style={{
-                      borderColor: phase.color === 'blue' ? 'rgb(59, 130, 246, 0.5)' :
-                                   phase.color === 'purple' ? 'rgb(168, 85, 247, 0.5)' :
-                                   'rgb(34, 197, 94, 0.5)',
-                      transitionDelay: `${index * 200}ms`
-                    }}
+                    className={`bg-gradient-to-r ${phase.color} border border-white/10 rounded-xl p-6 transform transition-all ${animateMetrics ? 'translate-x-0 opacity-100' : '-translate-x-10 opacity-0'}`}
+                    style={{ transitionDelay: `${index * 200}ms` }}
                   >
-                    <div className="flex items-start justify-between mb-4">
-                      <div>
-                        <h3 className="text-2xl font-bold mb-1">{phase.phase}</h3>
-                        <p className={`text-${phase.color}-400`}>{phase.months}</p>
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold mb-2">{phase.phase}</h3>
+                        <p className="text-gray-300 mb-1">{phase.description}</p>
                       </div>
-                      <Target className={`h-8 w-8 text-${phase.color}-400`} />
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-4 mb-4">
-                      {phase.deliverables.map(item => (
-                        <div key={item} className="flex items-start space-x-2">
-                          <CheckCircle className={`h-4 w-4 text-${phase.color}-400 flex-shrink-0 mt-0.5`} />
-                          <span className="text-sm text-gray-300">{item}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className={`p-3 bg-${phase.color}-500/10 border border-${phase.color}-500/30 rounded-lg`}>
-                      <div className="flex items-center space-x-2">
-                        <Award className={`h-5 w-5 text-${phase.color}-400`} />
-                        <span className="text-sm font-semibold">{phase.milestone}</span>
-                      </div>
+                      <span className="text-sm text-gray-400 font-medium">{phase.months}</span>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-8 text-center">
-                <p className="text-xl text-gray-300">
-                  Parallel operation with existing processes ensures zero disruption to ongoing missions
+              <div className="mt-8 bg-gradient-to-r from-green-600/20 to-blue-600/20 border border-green-500/30 rounded-xl p-6">
+                <p className="text-xl text-center font-semibold text-green-300">
+                  Zero disruption to existing operations • Gradual team onboarding • Continuous support
                 </p>
               </div>
             </div>
           )}
 
           {/* Slide 7: Team & Call to Action */}
-          {currentSlide === 6 && (
+          {currentSlide === 7 && (
             <div className="min-h-[80vh] flex flex-col justify-center">
               <h2 className="text-5xl font-bold mb-8 bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Why Progredi AI?
               </h2>
 
-              <div className="grid md:grid-cols-3 gap-8 mb-12">
-                <div className="bg-black/30 backdrop-blur-xl rounded-xl p-6 border border-purple-500/30">
-                  <Users className="h-12 w-12 text-purple-400 mb-4" />
-                  <h3 className="text-xl font-semibold mb-3">AI-First company with Expert Team</h3>
-                  <ul className="space-y-2 text-sm text-gray-300">
-                    <li>• Former DoD software engineers</li>
-                    <li>• AI/ML specialists from top tech</li>
-                    <li>• Navy acquisition experts</li>
-                    <li>• FedRAMP compliance specialists</li>
-                  </ul>
+              <div className="grid md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/20 border border-purple-500/30 rounded-xl p-6">
+                  <Cpu className="h-10 w-10 text-purple-400 mb-4" />
+                  <h3 className="text-lg font-bold mb-2">AI Expertise</h3>
+                  <p className="text-sm text-gray-400">Pioneers in AI-powered defense solutions with proven DoD track record</p>
                 </div>
-
-                <div className="bg-black/30 backdrop-blur-xl rounded-xl p-6 border border-purple-500/30">
-                  <Shield className="h-12 w-12 text-purple-400 mb-4" />
-                  <h3 className="text-xl font-semibold mb-3">Mission-First Design</h3>
-                  <ul className="space-y-2 text-sm text-gray-300">
-                    <li>• Built for DoD from day one</li>
-                    <li>• FedRAMP Moderate ready</li>
-                    <li>• IL4 architecture</li>
-                    <li>• Human-in-the-loop governance</li>
-                  </ul>
+                <div className="bg-gradient-to-br from-blue-900/30 to-cyan-900/20 border border-blue-500/30 rounded-xl p-6">
+                  <Shield className="h-10 w-10 text-blue-400 mb-4" />
+                  <h3 className="text-lg font-bold mb-2">Security First</h3>
+                  <p className="text-sm text-gray-400">FedRAMP ready, IL4/5 capable, zero-trust architecture</p>
                 </div>
-
-                <div className="bg-black/30 backdrop-blur-xl rounded-xl p-6 border border-purple-500/30">
-                  <Award className="h-12 w-12 text-purple-400 mb-4" />
-                  <h3 className="text-xl font-semibold mb-3">Proven Success</h3>
-                  <ul className="space-y-2 text-sm text-gray-300">
-                    <li>• Phase 1 winner</li>
-                    <li>• Enterprise Core Platform</li>
-                    <li>• Government partnerships</li>
-                    <li>• Clear ROI demonstration</li>
-                  </ul>
+                <div className="bg-gradient-to-br from-green-900/30 to-teal-900/20 border border-green-500/30 rounded-xl p-6">
+                  <Users className="h-10 w-10 text-green-400 mb-4" />
+                  <h3 className="text-lg font-bold mb-2">Navy Veterans</h3>
+                  <p className="text-sm text-gray-400">Team includes former Navy officers who understand the mission</p>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-12 text-center">
-                <h3 className="text-3xl font-bold mb-4">Ready to Transform Navy Testing?</h3>
-                <p className="text-xl mb-8 text-gray-200">
-                  Let's partner to accelerate PEO MLB's mission and drive efficiency in the process
-                </p>
+              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-8">
+                <h3 className="text-3xl font-bold mb-6 text-center">Ready to Transform Navy Testing?</h3>
 
-                <div className="flex items-center justify-center space-x-6">
-                  <button className="px-8 py-4 bg-white text-indigo-600 rounded-xl font-bold hover:bg-gray-100 transition transform hover:scale-105">
-                    Schedule Follow-Up
-                  </button>
-                  <button className="px-8 py-4 bg-black/30 backdrop-blur-xl rounded-xl font-bold border border-white/30 hover:bg-black/40 transition">
-                    View Technical Docs
-                  </button>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <a
+                    href="mailto:sales@progrediai.com?subject=Core%20APEX%20Demo%20Request&body=Hello%20Progredi%20AI%20Team,%0A%0AI'm%20interested%20in%20scheduling%20a%20demo%20of%20Core%20APEX%20for%20our%20Navy%20testing%20requirements.%0A%0AOrganization:%20%0AContact:%20%0APreferred%20Date/Time:%20%0A%0AThank%20you!"
+                    className="bg-white/10 backdrop-blur-lg hover:bg-white/20 border border-white/20 rounded-lg p-6 transition transform hover:scale-105 text-center"
+                  >
+                    <Mail className="h-8 w-8 mb-3 mx-auto" />
+                    <p className="font-bold text-lg mb-1">Schedule Demo</p>
+                    <p className="text-sm text-gray-300">sales@progrediai.com</p>
+                  </a>
+
+                  <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg p-6 text-center">
+                    <Globe className="h-8 w-8 mb-3 mx-auto" />
+                    <p className="font-bold text-lg mb-1">Learn More</p>
+                    <p className="text-sm text-gray-300">progrediai.com</p>
+                    <p className="text-xs text-gray-400 mt-2">CAGE: 10X15</p>
+                  </div>
                 </div>
 
-                <div className="mt-8 flex items-center justify-center space-x-8 text-sm">
-                  <div>
-                    <span className="text-gray-300">Contact:</span>
-                    <span className="ml-2 font-semibold">info@progrediai.com</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-300">CAGE Code:</span>
-                    <span className="ml-2 font-semibold"></span>
-                  </div>
+                <div className="mt-8 text-center">
+                  <p className="text-2xl font-bold mb-2">Win Phase 2 → Deploy in 90 Days</p>
+                  <p className="text-lg text-gray-200">Let's revolutionize Navy testing together</p>
                 </div>
               </div>
             </div>
@@ -633,18 +598,28 @@ export default function APEXPresentationPage() {
         </div>
       </main>
 
-      {/* Slide Progress Bar */}
-      <div className="fixed bottom-0 left-0 right-0 h-1 bg-gray-800">
-        <div
-          className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 transition-all duration-500"
-          style={{ width: `${((currentSlide + 1) / slides.length) * 100}%` }}
-        ></div>
-      </div>
-
-      {/* Keyboard Navigation Hint */}
-      <div className="fixed bottom-6 right-6 text-sm text-gray-500">
-        Use ← → arrow keys to navigate
-      </div>
+      {/* Footer Navigation Hints */}
+      <footer className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-50 backdrop-blur-lg border-t border-white/10 py-3">
+        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
+          <p className="text-xs text-gray-400">
+            Use ← → arrow keys to navigate
+          </p>
+          <div className="flex space-x-2">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2 h-2 rounded-full transition ${
+                  currentSlide === index ? 'bg-indigo-400' : 'bg-gray-600'
+                }`}
+              />
+            ))}
+          </div>
+          <p className="text-xs text-gray-400">
+            Progredi AI • CAGE: 10X15
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
