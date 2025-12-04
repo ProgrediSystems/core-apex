@@ -13,7 +13,8 @@ import {
   CheckCircle,
   AlertCircle,
   Clock,
-  Zap
+  Zap,
+  Archive
 } from 'lucide-react';
 import APEXDemoWorkflow from '@/components/APEXDemoWorkflow';
 
@@ -79,7 +80,7 @@ const agents: Agent[] = [
 
 export default function CoreAPEXPage() {
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'agents' | 'demo' | 'metrics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'agents' | 'demo' | 'metrics' | 'vault'>('overview');
   const [demoStatus, setDemoStatus] = useState<'idle' | 'running' | 'complete'>('idle');
 
   const runDemo = async () => {
@@ -130,7 +131,7 @@ export default function CoreAPEXPage() {
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
-            {['overview', 'agents', 'demo', 'metrics'].map((tab) => (
+            {['overview', 'agents', 'demo', 'metrics', 'vault'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
@@ -387,6 +388,90 @@ export default function CoreAPEXPage() {
                       FedRAMP ATO, IL4 deployment, 20+ applications, $2M+ savings
                     </p>
                   </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Vault Tab */}
+        {activeTab === 'vault' && (
+          <div className="space-y-6">
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                    Core Vault Integration
+                  </h3>
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Test reports are automatically saved to Core Vault for version control and collaboration
+                  </p>
+                </div>
+                <a
+                  href="/vault"
+                  className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition"
+                >
+                  View All Reports
+                </a>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <Archive className="h-8 w-8 text-indigo-600" />
+                    <div>
+                      <h4 className="font-semibold text-gray-900 dark:text-white">Latest Test Report</h4>
+                      <p className="text-sm text-gray-500">Saved 2 minutes ago</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Requirements Tested</span>
+                      <span className="font-semibold">47</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Pass Rate</span>
+                      <span className="font-semibold text-green-600">94%</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-gray-600">Compliance Score</span>
+                      <span className="font-semibold text-green-600">98%</span>
+                    </div>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <a
+                      href="https://corevault.progrediai.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+                    >
+                      View in Core Vault →
+                    </a>
+                  </div>
+                </div>
+
+                <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                  <h4 className="font-semibold text-gray-900 dark:text-white mb-4">
+                    How It Works
+                  </h4>
+                  <ul className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                    <li className="flex items-start">
+                      <span className="mr-2">1.</span>
+                      <span>Core APEX generates comprehensive test reports after each run</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">2.</span>
+                      <span>Reports are automatically saved to Core Vault with version control</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">3.</span>
+                      <span>Teams can access, share, and collaborate on results</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="mr-2">4.</span>
+                      <span>Historical data enables trend analysis and improvements</span>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
