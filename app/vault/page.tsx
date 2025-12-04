@@ -37,71 +37,85 @@ export default function VaultIntegration() {
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
-  // Sample reports saved to Core Vault
+  // Sample reports saved to Core Vault - Including Amazon.com Phase 2 tests
   const reports: TestReport[] = [
     {
-      id: 'RPT-2024-001',
-      name: 'MLB-2024 Authentication Suite',
-      project: 'PEO MLB',
-      date: '2024-12-03T10:30:00Z',
-      requirements: 47,
+      id: 'RPT-2025-001',
+      name: 'Amazon.com Add to Cart Test Suite',
+      project: 'Phase 2 Demo',
+      date: '2025-12-04T10:30:00Z',
+      requirements: 5,
+      tests: 32,
+      passRate: 96,
+      compliance: 98,
+      status: 'completed',
+      savedBy: 'Core APEX',
+      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2025-001'
+    },
+    {
+      id: 'RPT-2025-002',
+      name: 'Amazon.com Login/Logout Security',
+      project: 'Phase 2 Demo',
+      date: '2025-12-04T09:15:00Z',
+      requirements: 5,
+      tests: 28,
+      passRate: 100,
+      compliance: 100,
+      status: 'completed',
+      savedBy: 'Core APEX',
+      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2025-002'
+    },
+    {
+      id: 'RPT-2025-003',
+      name: 'Amazon.com Wishlist Management',
+      project: 'Phase 2 Demo',
+      date: '2025-12-03T14:45:00Z',
+      requirements: 5,
+      tests: 24,
+      passRate: 92,
+      compliance: 95,
+      status: 'completed',
+      savedBy: 'Core APEX',
+      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2025-003'
+    },
+    {
+      id: 'RPT-2025-004',
+      name: 'Amazon.com Search Filters',
+      project: 'Phase 2 Demo',
+      date: '2025-12-03T11:20:00Z',
+      requirements: 6,
+      tests: 31,
+      passRate: 88,
+      compliance: 94,
+      status: 'completed',
+      savedBy: 'Core APEX',
+      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2025-004'
+    },
+    {
+      id: 'RPT-2025-005',
+      name: 'Amazon.com Profile Management',
+      project: 'Phase 2 Demo',
+      date: '2025-12-02T16:00:00Z',
+      requirements: 6,
+      tests: 36,
+      passRate: 94,
+      compliance: 96,
+      status: 'completed',
+      savedBy: 'Core APEX',
+      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2025-005'
+    },
+    {
+      id: 'RPT-2025-006',
+      name: 'Amazon.com Full Compliance Suite',
+      project: 'Phase 2 Demo',
+      date: '2025-12-01T13:00:00Z',
+      requirements: 27,
       tests: 127,
       passRate: 94,
       compliance: 98,
       status: 'completed',
       savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2024-001'
-    },
-    {
-      id: 'RPT-2024-002',
-      name: 'Performance Testing Suite',
-      project: 'PEO MLB',
-      date: '2024-12-02T14:15:00Z',
-      requirements: 23,
-      tests: 89,
-      passRate: 88,
-      compliance: 95,
-      status: 'completed',
-      savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2024-002'
-    },
-    {
-      id: 'RPT-2024-003',
-      name: 'Section 508 Compliance Tests',
-      project: 'PEO MLB',
-      date: '2024-12-01T09:45:00Z',
-      requirements: 15,
-      tests: 42,
-      passRate: 100,
-      compliance: 100,
-      status: 'completed',
-      savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2024-003'
-    },
-    {
-      id: 'RPT-2024-004',
-      name: 'Data Encryption Standards',
-      project: 'PEO MLB',
-      date: '2024-11-30T16:20:00Z',
-      requirements: 31,
-      tests: 78,
-      passRate: 91,
-      compliance: 96,
-      status: 'completed',
-      savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2024-004'
-    },
-    {
-      id: 'RPT-2024-005',
-      name: 'Concurrent User Testing',
-      project: 'PEO MLB',
-      date: '2024-11-29T11:00:00Z',
-      requirements: 18,
-      tests: 56,
-      passRate: 82,
-      compliance: 90,
-      status: 'in-progress',
-      savedBy: 'Core APEX'
+      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2025-006'
     }
   ];
 

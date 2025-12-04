@@ -154,10 +154,15 @@ export default function APEXDemoWorkflow() {
       setShowHumanReview(true);
       setHumanReviewStep(1);
 
-      // Wait for human review simulation
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      setShowHumanReview(false);
-      setHumanReviewStep(null);
+      // Wait for human to click approve (don't auto-hide)
+      await new Promise(resolve => {
+        const checkInterval = setInterval(() => {
+          if (!showHumanReview) {
+            clearInterval(checkInterval);
+            resolve(undefined);
+          }
+        }, 100);
+      });
 
       return data;
     });
@@ -408,7 +413,13 @@ export default function APEXDemoWorkflow() {
                 Test Engineer reviewing generated test cases for critical requirements...
               </p>
             </div>
-            <button className="px-4 py-2 bg-orange-600 text-white rounded-lg text-sm font-medium">
+            <button
+              onClick={() => {
+                setShowHumanReview(false);
+                setHumanReviewStep(null);
+              }}
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition text-sm font-medium"
+            >
               Approve & Continue
             </button>
           </div>
