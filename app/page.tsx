@@ -17,6 +17,8 @@ import {
   Archive
 } from 'lucide-react';
 import APEXDemoWorkflow from '@/components/APEXDemoWorkflow';
+import BrandingHeader from '@/components/BrandingHeader';
+import BrandingFooter from '@/components/BrandingFooter';
 
 interface Agent {
   id: string;
@@ -101,31 +103,27 @@ export default function CoreAPEXPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
-      {/* Header */}
-      <header className="bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-3">
-              <TestTube2 className="h-8 w-8 text-indigo-600" />
-              <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Core APEX</h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Automated Performance & Evaluation eXpert</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-500">Navy-AIAT Phase 2 MVP</span>
-              <button
-                onClick={runDemo}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center space-x-2"
-              >
-                <Zap className="h-4 w-4" />
-                <span>Run Demo</span>
-              </button>
-            </div>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex flex-col">
+      {/* Progredi Branded Header */}
+      <BrandingHeader />
+
+      {/* Quick Actions Bar */}
+      <div className="bg-indigo-50 dark:bg-indigo-900/20 border-b border-indigo-200 dark:border-indigo-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-indigo-700 dark:text-indigo-300">
+              Navy-AIAT Phase 2 MVP • Transforming Navy Testing with AI
+            </span>
+            <button
+              onClick={runDemo}
+              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center space-x-2"
+            >
+              <Zap className="h-4 w-4" />
+              <span>Run Demo</span>
+            </button>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Navigation Tabs */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
@@ -149,7 +147,7 @@ export default function CoreAPEXPage() {
       </div>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {activeTab === 'overview' && (
           <div className="space-y-8">
             {/* Value Proposition */}
@@ -541,6 +539,9 @@ export default function CoreAPEXPage() {
           </div>
         </div>
       )}
+
+      {/* Progredi Branded Footer */}
+      <BrandingFooter />
     </div>
   );
 }

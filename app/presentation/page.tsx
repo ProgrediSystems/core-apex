@@ -615,24 +615,31 @@ export default function APEXPresentationPage() {
 
       {/* Footer Navigation Hints */}
       <footer className="fixed bottom-0 left-0 right-0 bg-black bg-opacity-50 backdrop-blur-lg border-t border-white/10 py-3">
-        <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          <p className="text-xs text-gray-400">
-            Use ← → arrow keys to navigate
-          </p>
-          <div className="flex space-x-2">
-            {slides.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentSlide(index)}
-                className={`w-2 h-2 rounded-full transition ${
-                  currentSlide === index ? 'bg-indigo-400' : 'bg-gray-600'
-                }`}
-              />
-            ))}
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-gray-400">
+              Use ← → arrow keys to navigate
+            </p>
+            <div className="flex space-x-2">
+              {slides.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={`w-2 h-2 rounded-full transition ${
+                    currentSlide === index ? 'bg-indigo-400' : 'bg-gray-600'
+                  }`}
+                />
+              ))}
+            </div>
+            <p className="text-xs text-gray-400">
+              Progredi AI • CAGE: 10X15
+            </p>
           </div>
-          <p className="text-xs text-gray-400">
-            Progredi AI • CAGE: 10X15
-          </p>
+          <div className="text-center">
+            <p className="text-xs text-gray-500">
+              © 2025 Progredi Systems, LLC. All rights reserved. • 🇺🇸 Proudly engineered in the USA
+            </p>
+          </div>
         </div>
       </footer>
     </div>
