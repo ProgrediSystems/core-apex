@@ -18,7 +18,7 @@ export default function BrandingFooter() {
               />
               <div>
                 <h3 className="text-lg font-bold">Progredi AI</h3>
-                <p className="text-xs text-gray-400">Advancing through AI</p>
+                <p className="text-xs text-gray-400">Intelligence That Transforms</p>
               </div>
             </div>
             <p className="text-sm text-gray-400">
@@ -86,7 +86,7 @@ export default function BrandingFooter() {
               🇺🇸 Proudly engineered in the USA
             </p>
             <p className="text-sm text-gray-500">
-              © 2025 Progredi Systems, LLC. All rights reserved.
+              © 2025 Progredi Systems, LLC dba Progredi AI. All rights reserved.
             </p>
             <div className="flex justify-center space-x-4 text-xs">
               <a href="https://progrediai.com/privacy" className="text-gray-500 hover:text-gray-300 transition">
