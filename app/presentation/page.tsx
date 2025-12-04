@@ -23,7 +23,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Play,
-  AlertTriangle
+  AlertTriangle,
+  Archive
 } from 'lucide-react';
 
 export default function APEXPresentationPage() {
@@ -378,7 +379,12 @@ export default function APEXPresentationPage() {
                       </li>
                       <li className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
-                        <span>Reports saved to Core Vault for collaboration</span>
+                        <span className="flex items-center">
+                          Reports saved to
+                          <Archive className="h-4 w-4 text-blue-400 mx-1" />
+                          <span className="font-semibold">Core Vault</span>
+                          for collaboration
+                        </span>
                       </li>
                     </ul>
                   </div>
@@ -419,6 +425,15 @@ export default function APEXPresentationPage() {
                 <p className="text-center text-sm text-gray-400 mt-4">
                   This is not a mockup - this is our working MVP running on AWS GovCloud
                 </p>
+
+                <div className="mt-6 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border border-blue-500/30 rounded-lg p-4">
+                  <div className="flex items-center justify-center space-x-3">
+                    <Archive className="h-6 w-6 text-blue-400" />
+                    <p className="text-sm">
+                      <span className="font-semibold">Core Vault Integration:</span> All test reports automatically saved with version control for team collaboration
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           )}

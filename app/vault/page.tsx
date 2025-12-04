@@ -141,10 +141,15 @@ export default function VaultIntegration() {
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center space-x-4">
-              <Archive className="h-10 w-10 text-indigo-600" />
+              <div className="bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 p-3 rounded-xl">
+                <Archive className="h-12 w-12 text-indigo-600" />
+              </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+                <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center">
                   Core Vault Integration
+                  <span className="ml-3 text-sm px-3 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded-full font-normal">
+                    Powered by Core Vault
+                  </span>
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400">
                   Test reports automatically saved and versioned in Core Vault
@@ -271,12 +276,17 @@ export default function VaultIntegration() {
         </div>
 
         {/* Integration Info */}
-        <div className="mt-8 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-6">
+        <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-6">
           <div className="flex items-start space-x-3">
-            <Archive className="h-6 w-6 text-blue-600 flex-shrink-0" />
-            <div>
-              <h3 className="font-semibold text-gray-900 dark:text-white mb-2">
+            <div className="bg-white dark:bg-gray-800 p-2 rounded-lg">
+              <Archive className="h-8 w-8 text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-gray-900 dark:text-white mb-2 flex items-center">
                 How Core Vault Integration Works
+                <span className="ml-3 text-xs px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded">
+                  Seamless Integration
+                </span>
               </h3>
               <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-2">
                 <li className="flex items-start">

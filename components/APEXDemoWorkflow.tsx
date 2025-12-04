@@ -597,7 +597,7 @@ export default function APEXDemoWorkflow() {
                   <li>• Human review approved test cases for critical authentication requirements</li>
                   <li>• Compliance Agent verified Section 508, FIPS 140-2, and DISA STIG standards</li>
                   <li>• Achieved 98% compliance score with automated verification</li>
-                  <li>• Reports automatically saved to Core Vault for version control</li>
+                  <li>• Reports automatically saved to <strong>Core Vault</strong> <Archive className="h-3 w-3 inline text-blue-600" /> for version control</li>
                 </ul>
               </div>
             </div>
@@ -610,9 +610,12 @@ export default function APEXDemoWorkflow() {
             </div>
             <div className="flex space-x-3">
               {savedToVault && (
-                <div className="flex items-center space-x-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg">
-                  <Archive className="h-4 w-4" />
-                  <span className="text-sm">Saved to Core Vault</span>
+                <div className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
+                  <Archive className="h-5 w-5 text-blue-600" />
+                  <div>
+                    <span className="text-sm font-semibold text-blue-900">Saved to Core Vault</span>
+                    <span className="text-xs text-blue-700 block">Report ID: RPT-2024-{String(Math.floor(Math.random() * 900) + 100).padStart(3, '0')}</span>
+                  </div>
                 </div>
               )}
               <a

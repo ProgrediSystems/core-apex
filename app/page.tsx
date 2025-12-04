@@ -400,7 +400,8 @@ export default function CoreAPEXPage() {
             <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">
+                    <Archive className="h-6 w-6 text-blue-600 mr-2" />
                     Core Vault Integration
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
