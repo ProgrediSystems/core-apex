@@ -89,15 +89,15 @@ export default function APEXDemoWorkflow() {
     compliance_score: 0
   });
 
-  // Sample JIRA requirements data
+  // Amazon.com test requirements for Phase 2 demonstration
   const jiraRequirements = [
-    { key: 'MLB-2024-15', summary: 'CAC Authentication Implementation', priority: 'Critical', type: 'Epic' },
-    { key: 'MLB-2024-16', summary: 'Performance Requirements', priority: 'High', type: 'Story' },
-    { key: 'MLB-2024-17', summary: 'Data Encryption Standards', priority: 'Critical', type: 'Story' },
-    { key: 'MLB-2024-18', summary: 'Section 508 Accessibility', priority: 'High', type: 'Story' },
-    { key: 'MLB-2024-19', summary: 'Concurrent User Support', priority: 'Medium', type: 'Story' },
-    { key: 'MLB-2024-20', summary: 'Audit Logging Requirements', priority: 'High', type: 'Story' },
-    { key: 'MLB-2024-21', summary: 'FIPS 140-2 Compliance', priority: 'Critical', type: 'Story' }
+    { key: 'UC1-FR1', summary: 'Add to Cart: Enable product selection from all pages', priority: 'Critical', type: 'Story' },
+    { key: 'UC1-FR2', summary: 'Add to Cart: Quantity validation and controls', priority: 'High', type: 'Story' },
+    { key: 'UC2-FR1', summary: 'Wishlist: Add button with login requirement', priority: 'High', type: 'Story' },
+    { key: 'UC3-FR1', summary: 'Search Filters: Dynamic filter display by category', priority: 'High', type: 'Story' },
+    { key: 'UC4-FR2', summary: 'Login: Secure credential validation', priority: 'Critical', type: 'Story' },
+    { key: 'UC5-FR4', summary: 'Profile: Email update with verification', priority: 'Critical', type: 'Story' },
+    { key: 'SEC-508', summary: 'Section 508 Accessibility Compliance', priority: 'Critical', type: 'Epic' }
   ];
 
   const runWorkflow = async () => {
@@ -112,11 +112,11 @@ export default function APEXDemoWorkflow() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          source: 'jira',
-          jira_config: {
-            url: 'https://navy-jira.mil',
-            project: 'MLB-2024',
-            epic: 'MLB-2024-15'
+          source: 'phase2-demo',
+          demo_config: {
+            target: 'www.amazon.com',
+            use_cases: ['UC1-AddToCart', 'UC2-Wishlist', 'UC3-SearchFilters', 'UC4-Login', 'UC5-Profile'],
+            requirements_count: 27
           }
         })
       });
@@ -124,7 +124,7 @@ export default function APEXDemoWorkflow() {
 
       setMetrics(prev => ({
         ...prev,
-        requirements_parsed: data.requirements_count || 47
+        requirements_parsed: data.requirements_count || 27
       }));
 
       return data;
@@ -268,11 +268,21 @@ export default function APEXDemoWorkflow() {
 
   const getDemoRequirements = () => {
     return [
-      { id: 'REQ-001', description: 'CAC authentication within 3 seconds' },
-      { id: 'REQ-002', description: 'Query performance under 2 seconds' },
-      { id: 'REQ-003', description: 'AES-256 encryption at rest' },
-      { id: 'REQ-004', description: 'Concurrent user editing' },
-      { id: 'REQ-005', description: 'Section 508 compliance' }
+      { id: 'UC1-FR1', description: 'Add to Cart: Product selection from listing/detail/search pages' },
+      { id: 'UC1-FR2', description: 'Add to Cart: Quantity specification with validation' },
+      { id: 'UC1-FR5', description: 'Add to Cart: Update cart with product persistence' },
+      { id: 'UC2-FR1', description: 'Wishlist: Add button on product pages with login prompt' },
+      { id: 'UC2-FR2', description: 'Wishlist: User-specific list association' },
+      { id: 'UC2-FR5', description: 'Wishlist: Management page with remove/move to cart' },
+      { id: 'UC3-FR1', description: 'Search Filters: Display relevant filters by category' },
+      { id: 'UC3-FR2', description: 'Search Filters: Multi-select and range support' },
+      { id: 'UC3-FR3', description: 'Search Filters: Real-time application' },
+      { id: 'UC4-FR1', description: 'Login: Form with username/password fields' },
+      { id: 'UC4-FR2', description: 'Login: Secure credential validation' },
+      { id: 'UC4-FR3', description: 'Login: Session establishment and redirect' },
+      { id: 'UC5-FR3', description: 'Profile: Edit name with validation' },
+      { id: 'UC5-FR4', description: 'Profile: Email update with verification' },
+      { id: 'UC5-FR6', description: 'Profile: Address management with defaults' }
     ];
   };
 
@@ -357,11 +367,11 @@ export default function APEXDemoWorkflow() {
             <div className="flex items-center space-x-2">
               <FileText className="h-5 w-5 text-blue-600" />
               <h3 className="font-semibold text-gray-900 dark:text-white">
-                Live JIRA Requirements Feed
+                Amazon.com Test Requirements (Phase 2)
               </h3>
             </div>
             <a href="#" className="text-sm text-blue-600 hover:text-blue-700 flex items-center space-x-1">
-              <span>View in JIRA</span>
+              <span>View All Requirements</span>
               <ExternalLink className="h-3 w-3" />
             </a>
           </div>
@@ -593,10 +603,10 @@ export default function APEXDemoWorkflow() {
                   Key Demo Insights
                 </h4>
                 <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                  <li>• Parsed 47 real requirements from Navy JIRA (MLB-2024 project)</li>
-                  <li>• Human review approved test cases for critical authentication requirements</li>
+                  <li>• Parsed 27 requirements from 5 Amazon.com use cases (Phase 2 demo)</li>
+                  <li>• Human review approved test cases for critical login and profile management</li>
                   <li>• Compliance Agent verified Section 508, FIPS 140-2, and DISA STIG standards</li>
-                  <li>• Achieved 98% compliance score with automated verification</li>
+                  <li>• Generated 127 comprehensive test cases covering all functional requirements</li>
                   <li>• Reports automatically saved to <strong>Core Vault</strong> <Archive className="h-3 w-3 inline text-blue-600" /> for version control</li>
                 </ul>
               </div>

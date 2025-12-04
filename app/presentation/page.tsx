@@ -151,8 +151,10 @@ export default function APEXPresentationPage() {
               </div>
 
               <div className="border-t border-white/20 pt-8 mt-8">
-                <p className="text-lg text-gray-300 mb-2">Navy-AIAT Prize Challenge • Phase 2</p>
-                <p className="text-md text-gray-400">Progredi AI • CAGE Code: 10X15</p>
+                <p className="text-lg text-gray-300 mb-2 font-semibold">2025 PEO MLB AIAT Prize Challenge • Phase 2</p>
+                <p className="text-md text-gray-400">CDCA Eastern Defense Summit • Charleston, SC</p>
+                <p className="text-md text-gray-400">December 10-11, 2025</p>
+                <p className="text-md text-gray-400 mt-2">Progredi Systems, LLC dba Progredi AI • CAGE: 10X15</p>
               </div>
 
               <div className="mt-12">
@@ -355,35 +357,36 @@ export default function APEXPresentationPage() {
 
                 <div className="grid md:grid-cols-2 gap-8 mb-8">
                   <div>
-                    <h4 className="text-lg font-semibold mb-4 text-indigo-300">What You'll See:</h4>
+                    <h4 className="text-lg font-semibold mb-4 text-indigo-300">Live Demo: Amazon.com Test Suite</h4>
                     <ul className="space-y-2 text-gray-300">
                       <li className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
-                        <span>Real JIRA requirements from MLB-2024 project</span>
+                        <span>5 Amazon.com use cases → Complete test coverage</span>
                       </li>
                       <li className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
-                        <span>47 requirements → 127 test cases in seconds</span>
+                        <span>UC1: Add to Cart (5 requirements, 15 test cases)</span>
                       </li>
                       <li className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
-                        <span>Human review for critical test cases</span>
+                        <span>UC2: Wishlist Management (5 requirements)</span>
                       </li>
                       <li className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
-                        <span>Parallel execution achieving 94% pass rate</span>
+                        <span>UC3: Search Filters (6 requirements)</span>
                       </li>
                       <li className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
-                        <span>Compliance verification (Section 508, FIPS, STIGs)</span>
+                        <span>UC4: Login/Logout (5 requirements)</span>
+                      </li>
+                      <li className="flex items-start">
+                        <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
+                        <span>UC5: Profile Management (6 requirements)</span>
                       </li>
                       <li className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
                         <span className="flex items-center">
-                          Reports saved to
-                          <Archive className="h-4 w-4 text-blue-400 mx-1" />
-                          <span className="font-semibold">Core Vault</span>
-                          for collaboration
+                          Full compliance with Section 508, FIPS, DISA STIGs
                         </span>
                       </li>
                     </ul>
