@@ -981,141 +981,6 @@ export default function APEXDemoWorkflow() {
         </div>
       )}
 
-      {/* Compliance Verification Details */}
-      {showComplianceDetails && complianceResults && (
-        <div className="mb-6 p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-2">
-              <Shield className="h-5 w-5 text-purple-600" />
-              <h3 className="font-semibold text-gray-900 dark:text-white">
-                Compliance Verification Results
-              </h3>
-              <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
-                DoD Standards
-              </span>
-            </div>
-            <div className="flex items-center space-x-2 text-sm">
-              <span className="text-gray-600 dark:text-gray-400">Overall Score:</span>
-              <span className={`font-bold ${metrics.compliance_score >= 90 ? 'text-green-600' : metrics.compliance_score >= 70 ? 'text-orange-600' : 'text-red-600'}`}>
-                {metrics.compliance_score}%
-              </span>
-            </div>
-          </div>
-
-          {/* Three compliance standards in columns */}
-          <div className="grid md:grid-cols-3 gap-4">
-            {/* Section 508 */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
-              <div className="bg-blue-50 dark:bg-blue-900/30 px-3 py-2 border-b border-gray-200 dark:border-gray-600">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-sm text-gray-900 dark:text-white">Section 508</span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                    complianceResults.section508.status === 'PASS'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-orange-100 text-orange-700'
-                  }`}>
-                    {complianceResults.section508.status}
-                  </span>
-                </div>
-                <span className="text-xs text-gray-500">Accessibility</span>
-              </div>
-              <div className="max-h-40 overflow-y-auto">
-                {complianceResults.section508.checks.map((check, idx) => (
-                  <div key={idx} className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                    <div className="flex items-start justify-between">
-                      <span className="text-xs text-gray-700 dark:text-gray-300 flex-1">{check.name}</span>
-                      {check.status === 'PASS' ? (
-                        <CheckCircle className="h-3.5 w-3.5 text-green-600 flex-shrink-0 ml-1" />
-                      ) : (
-                        <AlertCircle className="h-3.5 w-3.5 text-orange-600 flex-shrink-0 ml-1" />
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-500 mt-0.5">{check.details}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* FIPS 140-2 */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
-              <div className="bg-green-50 dark:bg-green-900/30 px-3 py-2 border-b border-gray-200 dark:border-gray-600">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-sm text-gray-900 dark:text-white">FIPS 140-2</span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                    complianceResults.fips.status === 'PASS'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-orange-100 text-orange-700'
-                  }`}>
-                    {complianceResults.fips.status}
-                  </span>
-                </div>
-                <span className="text-xs text-gray-500">Cryptographic</span>
-              </div>
-              <div className="max-h-40 overflow-y-auto">
-                {complianceResults.fips.checks.map((check, idx) => (
-                  <div key={idx} className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                    <div className="flex items-start justify-between">
-                      <span className="text-xs text-gray-700 dark:text-gray-300 flex-1">{check.name}</span>
-                      {check.status === 'PASS' ? (
-                        <CheckCircle className="h-3.5 w-3.5 text-green-600 flex-shrink-0 ml-1" />
-                      ) : (
-                        <AlertCircle className="h-3.5 w-3.5 text-orange-600 flex-shrink-0 ml-1" />
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-500 mt-0.5">{check.details}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* DISA STIGs */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
-              <div className="bg-orange-50 dark:bg-orange-900/30 px-3 py-2 border-b border-gray-200 dark:border-gray-600">
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold text-sm text-gray-900 dark:text-white">DISA STIGs</span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                    complianceResults.stig.status === 'PASS'
-                      ? 'bg-green-100 text-green-700'
-                      : 'bg-orange-100 text-orange-700'
-                  }`}>
-                    {complianceResults.stig.checks.filter(c => c.status === 'FINDING').length} Findings
-                  </span>
-                </div>
-                <span className="text-xs text-gray-500">Security Technical Implementation Guides</span>
-              </div>
-              <div className="max-h-40 overflow-y-auto">
-                {complianceResults.stig.checks.map((check, idx) => (
-                  <div key={idx} className={`px-3 py-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-700/50 ${
-                    check.status === 'FINDING' ? 'bg-orange-50 dark:bg-orange-900/10' : ''
-                  }`}>
-                    <div className="flex items-start justify-between">
-                      <span className="text-xs text-gray-700 dark:text-gray-300 flex-1">{check.name}</span>
-                      {check.status === 'PASS' ? (
-                        <CheckCircle className="h-3.5 w-3.5 text-green-600 flex-shrink-0 ml-1" />
-                      ) : (
-                        <AlertCircle className="h-3.5 w-3.5 text-orange-600 flex-shrink-0 ml-1" />
-                      )}
-                    </div>
-                    <p className={`text-xs mt-0.5 ${check.status === 'FINDING' ? 'text-orange-600 font-medium' : 'text-gray-500'}`}>
-                      {check.details}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-3 text-xs text-gray-500 flex items-center justify-between">
-            <span>
-              {complianceResults.section508.checks.length + complianceResults.fips.checks.length + complianceResults.stig.checks.length} total checks performed across 3 compliance frameworks
-            </span>
-            <span className="text-purple-600">
-              {complianceResults.stig.checks.filter(c => c.status === 'FINDING').length} findings require remediation
-            </span>
-          </div>
-        </div>
-      )}
-
       {/* Workflow Steps */}
       <div className="space-y-4 mb-8">
         {workflowSteps.map((step, index) => {
@@ -1281,9 +1146,120 @@ export default function APEXDemoWorkflow() {
                           <span className="text-gray-500">FIPS 140-2:</span>
                           <span className="ml-2 font-semibold text-green-600">{step.results.compliance?.fips_140_2}</span>
                         </div>
+                        <div>
+                          <span className="text-gray-500">DISA STIGs:</span>
+                          <span className="ml-2 font-semibold text-orange-600">{step.results.compliance?.disa_stig}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Score:</span>
+                          <span className={`ml-2 font-semibold ${step.results.compliance?.score >= 90 ? 'text-green-600' : 'text-orange-600'}`}>
+                            {step.results.compliance?.score}%
+                          </span>
+                        </div>
                       </>
                     )}
                   </div>
+
+                  {/* Detailed Compliance Checks - Only for Compliance step */}
+                  {step.id === 'compliance' && complianceResults && (
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-between mb-3">
+                        <h5 className="text-sm font-semibold text-gray-700 dark:text-gray-300">Detailed Compliance Checks</h5>
+                        <span className="text-xs text-gray-500">
+                          {complianceResults.section508.checks.length + complianceResults.fips.checks.length + complianceResults.stig.checks.length} checks across 3 frameworks
+                        </span>
+                      </div>
+                      <div className="grid md:grid-cols-3 gap-3">
+                        {/* Section 508 */}
+                        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
+                          <div className="bg-blue-50 dark:bg-blue-900/30 px-3 py-2 border-b border-gray-200 dark:border-gray-600">
+                            <div className="flex items-center justify-between">
+                              <span className="font-semibold text-xs text-gray-900 dark:text-white">Section 508</span>
+                              <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                                complianceResults.section508.status === 'PASS'
+                                  ? 'bg-green-100 text-green-700'
+                                  : 'bg-orange-100 text-orange-700'
+                              }`}>
+                                {complianceResults.section508.status}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="max-h-32 overflow-y-auto">
+                            {complianceResults.section508.checks.map((check, idx) => (
+                              <div key={idx} className="px-2 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs text-gray-700 dark:text-gray-300 truncate flex-1">{check.name}</span>
+                                  {check.status === 'PASS' ? (
+                                    <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0 ml-1" />
+                                  ) : (
+                                    <AlertCircle className="h-3 w-3 text-orange-600 flex-shrink-0 ml-1" />
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* FIPS 140-2 */}
+                        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
+                          <div className="bg-green-50 dark:bg-green-900/30 px-3 py-2 border-b border-gray-200 dark:border-gray-600">
+                            <div className="flex items-center justify-between">
+                              <span className="font-semibold text-xs text-gray-900 dark:text-white">FIPS 140-2</span>
+                              <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium ${
+                                complianceResults.fips.status === 'PASS'
+                                  ? 'bg-green-100 text-green-700'
+                                  : 'bg-orange-100 text-orange-700'
+                              }`}>
+                                {complianceResults.fips.status}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="max-h-32 overflow-y-auto">
+                            {complianceResults.fips.checks.map((check, idx) => (
+                              <div key={idx} className="px-2 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-b-0">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs text-gray-700 dark:text-gray-300 truncate flex-1">{check.name}</span>
+                                  {check.status === 'PASS' ? (
+                                    <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0 ml-1" />
+                                  ) : (
+                                    <AlertCircle className="h-3 w-3 text-orange-600 flex-shrink-0 ml-1" />
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* DISA STIGs */}
+                        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
+                          <div className="bg-orange-50 dark:bg-orange-900/30 px-3 py-2 border-b border-gray-200 dark:border-gray-600">
+                            <div className="flex items-center justify-between">
+                              <span className="font-semibold text-xs text-gray-900 dark:text-white">DISA STIGs</span>
+                              <span className="text-xs px-1.5 py-0.5 rounded-full font-medium bg-orange-100 text-orange-700">
+                                {complianceResults.stig.checks.filter(c => c.status === 'FINDING').length} Findings
+                              </span>
+                            </div>
+                          </div>
+                          <div className="max-h-32 overflow-y-auto">
+                            {complianceResults.stig.checks.map((check, idx) => (
+                              <div key={idx} className={`px-2 py-1.5 border-b border-gray-100 dark:border-gray-700 last:border-b-0 ${
+                                check.status === 'FINDING' ? 'bg-orange-50 dark:bg-orange-900/10' : ''
+                              }`}>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs text-gray-700 dark:text-gray-300 truncate flex-1">{check.name}</span>
+                                  {check.status === 'PASS' ? (
+                                    <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0 ml-1" />
+                                  ) : (
+                                    <AlertCircle className="h-3 w-3 text-orange-600 flex-shrink-0 ml-1" />
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
