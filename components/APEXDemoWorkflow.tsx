@@ -1122,6 +1122,14 @@ export default function APEXDemoWorkflow() {
                           <span className="text-gray-500">Coverage:</span>
                           <span className="ml-2 font-semibold">{step.results.test_suite?.coverage?.percentage || 95}%</span>
                         </div>
+                        <div>
+                          <span className="text-gray-500">AI Model:</span>
+                          <span className="ml-2 font-semibold">Claude 3.5 Sonnet</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Avg Tests/Req:</span>
+                          <span className="ml-2 font-semibold">2.5</span>
+                        </div>
                       </>
                     )}
                     {step.id === 'execution' && (
@@ -1159,6 +1167,137 @@ export default function APEXDemoWorkflow() {
                       </>
                     )}
                   </div>
+
+                  {/* AI Test Generation Visualization - Only for Test Design step */}
+                  {step.id === 'test-design' && (
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <div className="flex items-center justify-between mb-3">
+                        <h5 className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center space-x-2">
+                          <Zap className="h-4 w-4 text-purple-600" />
+                          <span>AI Test Generation Process</span>
+                        </h5>
+                        <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
+                          Powered by Claude AI
+                        </span>
+                      </div>
+
+                      {/* AI Generation Flow Visualization */}
+                      <div className="bg-gradient-to-r from-purple-50 via-indigo-50 to-blue-50 dark:from-purple-900/20 dark:via-indigo-900/20 dark:to-blue-900/20 rounded-lg border border-purple-200 dark:border-purple-700 p-4">
+                        {/* Sample Requirement Analysis */}
+                        <div className="mb-4">
+                          <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-2 uppercase tracking-wide">
+                            Example: AI Analyzing Requirement UC1-FR5.2
+                          </div>
+                          <div className="flex items-start space-x-4">
+                            {/* Input: Requirement */}
+                            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg border border-blue-200 dark:border-blue-700 p-3">
+                              <div className="flex items-center space-x-2 mb-2">
+                                <FileText className="h-4 w-4 text-blue-600" />
+                                <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">INPUT: Requirement</span>
+                              </div>
+                              <p className="text-sm text-gray-700 dark:text-gray-300">
+                                <span className="font-mono bg-blue-100 dark:bg-blue-900/30 px-1 rounded text-xs">UC1-FR5.2</span>
+                                {' '}Update quantity if product already in cart
+                              </p>
+                            </div>
+
+                            {/* Arrow */}
+                            <div className="flex flex-col items-center justify-center pt-4">
+                              <div className="bg-purple-600 text-white rounded-full p-2 shadow-lg">
+                                <Zap className="h-4 w-4" />
+                              </div>
+                              <ArrowRight className="h-5 w-5 text-purple-500 mt-1" />
+                              <span className="text-xs text-purple-600 font-medium mt-1">AI</span>
+                            </div>
+
+                            {/* Output: Generated Tests */}
+                            <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg border border-green-200 dark:border-green-700 p-3">
+                              <div className="flex items-center space-x-2 mb-2">
+                                <Code className="h-4 w-4 text-green-600" />
+                                <span className="text-xs font-semibold text-green-700 dark:text-green-300">OUTPUT: Generated Tests</span>
+                              </div>
+                              <ul className="text-xs space-y-1">
+                                <li className="flex items-center space-x-1">
+                                  <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
+                                  <span className="text-gray-700 dark:text-gray-300">TC-003: Update cart quantity when adding existing product</span>
+                                </li>
+                                <li className="flex items-center space-x-1">
+                                  <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
+                                  <span className="text-gray-700 dark:text-gray-300">TC-003a: Verify quantity increments correctly</span>
+                                </li>
+                                <li className="flex items-center space-x-1">
+                                  <CheckCircle className="h-3 w-3 text-green-600 flex-shrink-0" />
+                                  <span className="text-gray-700 dark:text-gray-300">TC-003b: Test cart total updates after quantity change</span>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* AI Analysis Details */}
+                        <div className="bg-white/60 dark:bg-gray-800/60 rounded-lg p-3 border border-purple-100 dark:border-purple-800">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <Settings2 className="h-4 w-4 text-purple-600" />
+                            <span className="text-xs font-semibold text-purple-700 dark:text-purple-300">AI Analysis</span>
+                          </div>
+                          <div className="grid grid-cols-4 gap-3 text-xs">
+                            <div>
+                              <span className="text-gray-500 block">Test Types</span>
+                              <span className="font-medium text-gray-800 dark:text-gray-200">Happy Path, Edge Cases, Boundary</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 block">Assertions</span>
+                              <span className="font-medium text-gray-800 dark:text-gray-200">Cart state, UI feedback, DB sync</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 block">Dependencies</span>
+                              <span className="font-medium text-gray-800 dark:text-gray-200">Auth session, Cart API</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500 block">Priority</span>
+                              <span className="font-medium text-red-600">Critical</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Generation Stats */}
+                        <div className="mt-3 flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
+                          <div className="flex items-center space-x-4">
+                            <span className="flex items-center space-x-1">
+                              <FileText className="h-3 w-3" />
+                              <span>77 requirements analyzed</span>
+                            </span>
+                            <span className="flex items-center space-x-1">
+                              <Code className="h-3 w-3" />
+                              <span>127 tests generated</span>
+                            </span>
+                            <span className="flex items-center space-x-1">
+                              <TrendingUp className="h-3 w-3" />
+                              <span>95% coverage achieved</span>
+                            </span>
+                          </div>
+                          <span className="text-purple-600 font-medium">Avg 2.5 tests per requirement</span>
+                        </div>
+                      </div>
+
+                      {/* Use Case Breakdown */}
+                      <div className="mt-3 grid grid-cols-5 gap-2">
+                        {[
+                          { uc: 'UC1', name: 'Add to Cart', reqs: 13, tests: 32, color: 'bg-green-100 text-green-800 border-green-200' },
+                          { uc: 'UC2', name: 'Wishlist', reqs: 12, tests: 30, color: 'bg-purple-100 text-purple-800 border-purple-200' },
+                          { uc: 'UC3', name: 'Filters', reqs: 13, tests: 28, color: 'bg-blue-100 text-blue-800 border-blue-200' },
+                          { uc: 'UC4', name: 'Login', reqs: 18, tests: 22, color: 'bg-orange-100 text-orange-800 border-orange-200' },
+                          { uc: 'UC5', name: 'Profile', reqs: 21, tests: 15, color: 'bg-pink-100 text-pink-800 border-pink-200' }
+                        ].map(item => (
+                          <div key={item.uc} className={`${item.color} border rounded-lg p-2 text-center`}>
+                            <div className="font-bold text-sm">{item.uc}</div>
+                            <div className="text-xs opacity-80">{item.name}</div>
+                            <div className="text-xs mt-1 font-medium">{item.reqs} reqs → {item.tests} tests</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   {/* Detailed Compliance Checks - Only for Compliance step */}
                   {step.id === 'compliance' && complianceResults && (
