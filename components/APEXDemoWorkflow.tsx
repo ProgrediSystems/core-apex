@@ -56,6 +56,12 @@ export default function APEXDemoWorkflow() {
     jiraIssueKey?: string;
   }>({ savingToVault: false, savingToJira: false, vaultSaved: false, jiraSaved: false });
   const [showTestCases, setShowTestCases] = useState(false);
+  const [showComplianceDetails, setShowComplianceDetails] = useState(false);
+  const [complianceResults, setComplianceResults] = useState<{
+    section508: { status: string; checks: Array<{ name: string; status: string; details: string }> };
+    fips: { status: string; checks: Array<{ name: string; status: string; details: string }> };
+    stig: { status: string; checks: Array<{ name: string; status: string; details: string }> };
+  } | null>(null);
 
   // Check JIRA connection on mount
   useEffect(() => {
@@ -289,6 +295,8 @@ export default function APEXDemoWorkflow() {
     setCurrentStep(0);
     setSavedToVault(false);
     setShowTestCases(false);
+    setShowComplianceDetails(false);
+    setComplianceResults(null);
     setTestCaseSaveStatus({ savingToVault: false, savingToJira: false, vaultSaved: false, jiraSaved: false });
     setShowJiraRequirements(true);
 
@@ -397,22 +405,77 @@ export default function APEXDemoWorkflow() {
       };
     });
 
-    // Step 5: Compliance Agent (NEW)
+    // Step 5: Compliance Agent - Detailed compliance verification
     await runStep(4, async () => {
-      // Simulate compliance check
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Simulate detailed compliance checks
+      await new Promise(resolve => setTimeout(resolve, 2500));
+
+      // Section 508 Accessibility Checks
+      const section508Checks = [
+        { name: '1194.21(a) Keyboard Accessibility', status: 'PASS', details: 'All interactive elements accessible via keyboard' },
+        { name: '1194.21(b) Focus Indicators', status: 'PASS', details: 'Visible focus indicators on all form controls' },
+        { name: '1194.21(c) Screen Reader Support', status: 'PASS', details: 'ARIA labels present on dynamic content' },
+        { name: '1194.21(d) Color Contrast', status: 'PASS', details: 'WCAG 2.1 AA contrast ratios met (4.5:1)' },
+        { name: '1194.21(l) Form Labels', status: 'PASS', details: 'All form inputs have associated labels' },
+        { name: '1194.22(a) Alt Text', status: 'PASS', details: 'All images have descriptive alt attributes' },
+      ];
+
+      // FIPS 140-2 Cryptographic Checks
+      const fipsChecks = [
+        { name: 'FIPS 140-2 L1: TLS 1.2/1.3', status: 'PASS', details: 'All connections use TLS 1.2+ with approved ciphers' },
+        { name: 'FIPS 140-2 L1: AES-256 Encryption', status: 'PASS', details: 'Data at rest encrypted with AES-256-GCM' },
+        { name: 'FIPS 140-2 L1: SHA-256 Hashing', status: 'PASS', details: 'Password hashing uses PBKDF2-SHA256' },
+        { name: 'FIPS 140-2 L1: Key Management', status: 'PASS', details: 'API keys stored in AWS Secrets Manager' },
+        { name: 'FIPS 140-2 L1: Session Tokens', status: 'PASS', details: 'JWT tokens signed with RS256 algorithm' },
+      ];
+
+      // DISA STIG Checks
+      const stigChecks = [
+        { name: 'STIG V-222396: Input Validation', status: 'PASS', details: 'All user inputs sanitized and validated' },
+        { name: 'STIG V-222400: SQL Injection', status: 'PASS', details: 'Parameterized queries used throughout' },
+        { name: 'STIG V-222401: XSS Prevention', status: 'PASS', details: 'Output encoding and CSP headers implemented' },
+        { name: 'STIG V-222425: Session Timeout', status: 'PASS', details: 'Sessions expire after 30 minutes of inactivity' },
+        { name: 'STIG V-222430: Auth Lockout', status: 'FINDING', details: 'CAT II: Account lockout after 5 failed attempts (needs 3)' },
+        { name: 'STIG V-222432: Password Complexity', status: 'PASS', details: 'Passwords require 12+ chars, mixed case, numbers, symbols' },
+        { name: 'STIG V-222544: Audit Logging', status: 'FINDING', details: 'CAT III: Missing timestamp on some audit entries' },
+        { name: 'STIG V-222550: Error Handling', status: 'PASS', details: 'Generic error messages returned to users' },
+      ];
+
+      const complianceData = {
+        section508: {
+          status: section508Checks.every(c => c.status === 'PASS') ? 'PASS' : 'FINDINGS',
+          checks: section508Checks
+        },
+        fips: {
+          status: fipsChecks.every(c => c.status === 'PASS') ? 'PASS' : 'FINDINGS',
+          checks: fipsChecks
+        },
+        stig: {
+          status: stigChecks.every(c => c.status === 'PASS') ? 'PASS' : 'FINDINGS',
+          checks: stigChecks
+        }
+      };
+
+      setComplianceResults(complianceData);
+      setShowComplianceDetails(true);
+
+      const totalChecks = section508Checks.length + fipsChecks.length + stigChecks.length;
+      const passedChecks = [...section508Checks, ...fipsChecks, ...stigChecks].filter(c => c.status === 'PASS').length;
+      const complianceScore = Math.round((passedChecks / totalChecks) * 100);
 
       setMetrics(prev => ({
         ...prev,
-        compliance_score: 98
+        compliance_score: complianceScore
       }));
 
       return {
         compliance: {
-          section_508: 'PASS',
-          fips_140_2: 'PASS',
-          disa_stig: 'PASS with 2 findings',
-          fedramp: 'Ready for assessment'
+          section_508: complianceData.section508.status,
+          fips_140_2: complianceData.fips.status,
+          disa_stig: `${stigChecks.filter(c => c.status === 'FINDING').length} findings`,
+          total_checks: totalChecks,
+          passed_checks: passedChecks,
+          score: complianceScore
         }
       };
     });
@@ -885,6 +948,141 @@ export default function APEXDemoWorkflow() {
           <div className="mt-2 text-xs text-gray-500 flex items-center justify-between">
             <span>Showing sample of {generatedTestCases.length} generated test cases (127 total)</span>
             <span className="text-green-600">{generatedTestCases.filter(tc => tc.status === 'passed').length} passed, {generatedTestCases.filter(tc => tc.status === 'failed').length} failed</span>
+          </div>
+        </div>
+      )}
+
+      {/* Compliance Verification Details */}
+      {showComplianceDetails && complianceResults && (
+        <div className="mb-6 p-4 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-2">
+              <Shield className="h-5 w-5 text-purple-600" />
+              <h3 className="font-semibold text-gray-900 dark:text-white">
+                Compliance Verification Results
+              </h3>
+              <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
+                DoD Standards
+              </span>
+            </div>
+            <div className="flex items-center space-x-2 text-sm">
+              <span className="text-gray-600 dark:text-gray-400">Overall Score:</span>
+              <span className={`font-bold ${metrics.compliance_score >= 90 ? 'text-green-600' : metrics.compliance_score >= 70 ? 'text-orange-600' : 'text-red-600'}`}>
+                {metrics.compliance_score}%
+              </span>
+            </div>
+          </div>
+
+          {/* Three compliance standards in columns */}
+          <div className="grid md:grid-cols-3 gap-4">
+            {/* Section 508 */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
+              <div className="bg-blue-50 dark:bg-blue-900/30 px-3 py-2 border-b border-gray-200 dark:border-gray-600">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-sm text-gray-900 dark:text-white">Section 508</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                    complianceResults.section508.status === 'PASS'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-orange-100 text-orange-700'
+                  }`}>
+                    {complianceResults.section508.status}
+                  </span>
+                </div>
+                <span className="text-xs text-gray-500">Accessibility</span>
+              </div>
+              <div className="max-h-40 overflow-y-auto">
+                {complianceResults.section508.checks.map((check, idx) => (
+                  <div key={idx} className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <div className="flex items-start justify-between">
+                      <span className="text-xs text-gray-700 dark:text-gray-300 flex-1">{check.name}</span>
+                      {check.status === 'PASS' ? (
+                        <CheckCircle className="h-3.5 w-3.5 text-green-600 flex-shrink-0 ml-1" />
+                      ) : (
+                        <AlertCircle className="h-3.5 w-3.5 text-orange-600 flex-shrink-0 ml-1" />
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-0.5">{check.details}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* FIPS 140-2 */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
+              <div className="bg-green-50 dark:bg-green-900/30 px-3 py-2 border-b border-gray-200 dark:border-gray-600">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-sm text-gray-900 dark:text-white">FIPS 140-2</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                    complianceResults.fips.status === 'PASS'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-orange-100 text-orange-700'
+                  }`}>
+                    {complianceResults.fips.status}
+                  </span>
+                </div>
+                <span className="text-xs text-gray-500">Cryptographic</span>
+              </div>
+              <div className="max-h-40 overflow-y-auto">
+                {complianceResults.fips.checks.map((check, idx) => (
+                  <div key={idx} className="px-3 py-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <div className="flex items-start justify-between">
+                      <span className="text-xs text-gray-700 dark:text-gray-300 flex-1">{check.name}</span>
+                      {check.status === 'PASS' ? (
+                        <CheckCircle className="h-3.5 w-3.5 text-green-600 flex-shrink-0 ml-1" />
+                      ) : (
+                        <AlertCircle className="h-3.5 w-3.5 text-orange-600 flex-shrink-0 ml-1" />
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 mt-0.5">{check.details}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* DISA STIGs */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
+              <div className="bg-orange-50 dark:bg-orange-900/30 px-3 py-2 border-b border-gray-200 dark:border-gray-600">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-sm text-gray-900 dark:text-white">DISA STIGs</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                    complianceResults.stig.status === 'PASS'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-orange-100 text-orange-700'
+                  }`}>
+                    {complianceResults.stig.checks.filter(c => c.status === 'FINDING').length} Findings
+                  </span>
+                </div>
+                <span className="text-xs text-gray-500">Security Technical Implementation Guides</span>
+              </div>
+              <div className="max-h-40 overflow-y-auto">
+                {complianceResults.stig.checks.map((check, idx) => (
+                  <div key={idx} className={`px-3 py-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-700/50 ${
+                    check.status === 'FINDING' ? 'bg-orange-50 dark:bg-orange-900/10' : ''
+                  }`}>
+                    <div className="flex items-start justify-between">
+                      <span className="text-xs text-gray-700 dark:text-gray-300 flex-1">{check.name}</span>
+                      {check.status === 'PASS' ? (
+                        <CheckCircle className="h-3.5 w-3.5 text-green-600 flex-shrink-0 ml-1" />
+                      ) : (
+                        <AlertCircle className="h-3.5 w-3.5 text-orange-600 flex-shrink-0 ml-1" />
+                      )}
+                    </div>
+                    <p className={`text-xs mt-0.5 ${check.status === 'FINDING' ? 'text-orange-600 font-medium' : 'text-gray-500'}`}>
+                      {check.details}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-3 text-xs text-gray-500 flex items-center justify-between">
+            <span>
+              {complianceResults.section508.checks.length + complianceResults.fips.checks.length + complianceResults.stig.checks.length} total checks performed across 3 compliance frameworks
+            </span>
+            <span className="text-purple-600">
+              {complianceResults.stig.checks.filter(c => c.status === 'FINDING').length} findings require remediation
+            </span>
           </div>
         </div>
       )}
