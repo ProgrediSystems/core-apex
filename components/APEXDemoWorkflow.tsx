@@ -36,6 +36,7 @@ interface WorkflowStep {
   duration?: number;
   results?: any;
   requiresHumanReview?: boolean;
+  errorMessage?: string;
 }
 
 export default function APEXDemoWorkflow() {
@@ -512,10 +513,12 @@ export default function APEXDemoWorkflow() {
         return updated;
       });
     } catch (error) {
-      // Update step status to error
+      // Update step status to error with message
+      const errorMsg = error instanceof Error ? error.message : 'An unexpected error occurred';
       setWorkflowSteps(prev => {
         const updated = [...prev];
         updated[stepIndex].status = 'error';
+        updated[stepIndex].errorMessage = errorMsg;
         return updated;
       });
     }
@@ -1113,8 +1116,21 @@ export default function APEXDemoWorkflow() {
                     <Icon className="h-6 w-6 text-indigo-600" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white">
-                      {step.name}
+                    <h4 className="font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
+                      <span>{step.name}</span>
+                      {/* Show JIRA connection badge for Requirements step */}
+                      {step.id === 'requirements' && jiraConnectionStatus === 'connected' && (
+                        <span className="flex items-center text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
+                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1 animate-pulse"></span>
+                          JIRA Live
+                        </span>
+                      )}
+                      {step.id === 'requirements' && jiraConnectionStatus === 'offline' && (
+                        <span className="flex items-center text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
+                          <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-1"></span>
+                          Demo Mode
+                        </span>
+                      )}
                     </h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
                       {step.agent}
@@ -1122,7 +1138,7 @@ export default function APEXDemoWorkflow() {
                   </div>
                 </div>
                 <div className="flex items-center space-x-3">
-                  {step.requiresHumanReview && (
+                  {step.requiresHumanReview && step.status !== 'error' && step.status !== 'pending' && (
                     <span className="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded">
                       Human Review
                     </span>
@@ -1137,6 +1153,57 @@ export default function APEXDemoWorkflow() {
                   }`} />
                 </div>
               </div>
+
+              {/* Error Message with User Action Prompt */}
+              {step.status === 'error' && (
+                <div className="mt-4 p-3 bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-700 rounded-lg">
+                  <div className="flex items-start space-x-3">
+                    <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <h5 className="font-semibold text-red-800 dark:text-red-300 text-sm">
+                        Agent Workflow Failed
+                      </h5>
+                      <p className="text-sm text-red-700 dark:text-red-400 mt-1">
+                        {step.errorMessage || 'The agent encountered an error during execution.'}
+                      </p>
+                      <div className="mt-3 flex items-center space-x-3">
+                        <button
+                          onClick={() => {
+                            // Reset this step and re-run from here
+                            setWorkflowSteps(prev => {
+                              const updated = [...prev];
+                              updated[index].status = 'pending';
+                              updated[index].errorMessage = undefined;
+                              return updated;
+                            });
+                          }}
+                          className="px-3 py-1.5 bg-red-600 text-white rounded text-xs font-medium hover:bg-red-700 transition"
+                        >
+                          Retry Step
+                        </button>
+                        <button
+                          onClick={() => {
+                            // Skip this step and continue
+                            setWorkflowSteps(prev => {
+                              const updated = [...prev];
+                              updated[index].status = 'complete';
+                              updated[index].errorMessage = undefined;
+                              updated[index].results = { skipped: true };
+                              return updated;
+                            });
+                          }}
+                          className="px-3 py-1.5 bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300 rounded text-xs font-medium hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+                        >
+                          Skip & Continue
+                        </button>
+                        <span className="text-xs text-red-600 dark:text-red-400">
+                          Action required to proceed
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Step Results */}
               {step.status === 'complete' && step.results && (
