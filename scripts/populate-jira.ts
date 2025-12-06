@@ -358,7 +358,7 @@ async function createJiraIssue(
     fields.priority = { name: priority };
   }
 
-  if (parentKey && issueType === 'Sub-task') {
+  if (parentKey && (issueType === 'Sub-task' || issueType === 'Subtask')) {
     fields.parent = { key: parentKey };
   }
 
@@ -408,10 +408,10 @@ async function populateJira(config: JiraConfig) {
         try {
           const storyIssue = await createJiraIssue(
             config,
-            'Story',
+            'Task',  // Using Task since Story is not available in this project
             `${ucKey}-${story.id}: ${story.summary}`,
             `Functional Requirement ${story.id} for ${uc.name}`,
-            undefined, // Stories aren't children of Epics in JIRA Cloud - they use Epic Link
+            undefined, // Tasks aren't children of Epics in JIRA Cloud - they use Epic Link
             [ucKey, `FR${story.id}`, 'Phase2'],
             story.priority
           );
@@ -424,7 +424,7 @@ async function populateJira(config: JiraConfig) {
             try {
               const subtaskIssue = await createJiraIssue(
                 config,
-                'Sub-task',
+                'Subtask',  // Using Subtask (not Sub-task) as shown in project types
                 `${ucKey}-${subtask.id}: ${subtask.summary}`,
                 `Sub-requirement ${subtask.id} for ${story.id}`,
                 storyIssue.key,

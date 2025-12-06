@@ -42,6 +42,27 @@ export default function APEXDemoWorkflow() {
   const [humanReviewStep, setHumanReviewStep] = useState<number | null>(null);
   const [showJiraRequirements, setShowJiraRequirements] = useState(false);
   const [savedToVault, setSavedToVault] = useState(false);
+  const [liveJiraData, setLiveJiraData] = useState<any>(null);
+  const [jiraConnectionStatus, setJiraConnectionStatus] = useState<'connected' | 'offline' | 'loading'>('loading');
+
+  // Check JIRA connection on mount
+  useEffect(() => {
+    const checkJiraConnection = async () => {
+      try {
+        const response = await fetch('/api/jira/requirements?project=SCRUM');
+        const data = await response.json();
+        if (data.success && data.requirements?.length > 0) {
+          setLiveJiraData(data);
+          setJiraConnectionStatus('connected');
+        } else {
+          setJiraConnectionStatus('offline');
+        }
+      } catch {
+        setJiraConnectionStatus('offline');
+      }
+    };
+    checkJiraConnection();
+  }, []);
 
   const [workflowSteps, setWorkflowSteps] = useState<WorkflowStep[]>([
     {
@@ -521,20 +542,42 @@ export default function APEXDemoWorkflow() {
         </button>
       </div>
 
-      {/* Amazon.com Requirements Display - All 77 Requirements */}
+      {/* Amazon.com Requirements Display - All Requirements */}
       {showJiraRequirements && (
         <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-2">
               <FileText className="h-5 w-5 text-blue-600" />
               <h3 className="font-semibold text-gray-900 dark:text-white">
-                Amazon.com Phase 2 Requirements ({jiraRequirements.length} Total)
+                {jiraConnectionStatus === 'connected' ? (
+                  <>Live JIRA: Amazon.com Phase 2 ({liveJiraData?.total || jiraRequirements.length} Issues)</>
+                ) : (
+                  <>Amazon.com Phase 2 Requirements ({jiraRequirements.length} Total)</>
+                )}
               </h3>
+              {jiraConnectionStatus === 'connected' && (
+                <span className="flex items-center text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
+                  <span className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></span>
+                  JIRA Connected
+                </span>
+              )}
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-xs text-gray-500">
-                5 Use Cases • {jiraRequirements.filter(r => r.priority === 'Critical').length} Critical • {jiraRequirements.filter(r => r.priority === 'High').length} High
-              </span>
+              {jiraConnectionStatus === 'connected' ? (
+                <a
+                  href="https://progrediai.atlassian.net/browse/SCRUM"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-blue-600 hover:text-blue-700 flex items-center space-x-1"
+                >
+                  <span>Open in JIRA</span>
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              ) : (
+                <span className="text-xs text-gray-500">
+                  5 Use Cases • {jiraRequirements.filter(r => r.priority === 'Critical').length} Critical • {jiraRequirements.filter(r => r.priority === 'High').length} High
+                </span>
+              )}
             </div>
           </div>
 
