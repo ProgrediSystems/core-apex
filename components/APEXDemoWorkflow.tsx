@@ -22,7 +22,10 @@ import {
   UserCheck,
   Archive,
   ExternalLink,
-  Eye
+  Eye,
+  Upload,
+  Link2,
+  RefreshCw
 } from 'lucide-react';
 
 interface WorkflowStep {
@@ -44,6 +47,15 @@ export default function APEXDemoWorkflow() {
   const [savedToVault, setSavedToVault] = useState(false);
   const [liveJiraData, setLiveJiraData] = useState<any>(null);
   const [jiraConnectionStatus, setJiraConnectionStatus] = useState<'connected' | 'offline' | 'loading'>('loading');
+  const [testCaseSaveStatus, setTestCaseSaveStatus] = useState<{
+    savingToVault: boolean;
+    savingToJira: boolean;
+    vaultSaved: boolean;
+    jiraSaved: boolean;
+    vaultUrl?: string;
+    jiraIssueKey?: string;
+  }>({ savingToVault: false, savingToJira: false, vaultSaved: false, jiraSaved: false });
+  const [showTestCases, setShowTestCases] = useState(false);
 
   // Check JIRA connection on mount
   useEffect(() => {
@@ -172,10 +184,112 @@ export default function APEXDemoWorkflow() {
     { key: 'UC5-FR6.5', summary: 'Validate address format', priority: 'High', type: 'Sub-task', useCase: 'Profile' }
   ];
 
+  // Generated test cases for display
+  const generatedTestCases = [
+    { id: 'TC-001', name: 'Verify Add to Cart button displays on product page', requirement: 'UC1-FR4', status: 'passed', priority: 'Critical' },
+    { id: 'TC-002', name: 'Validate quantity field accepts positive integers', requirement: 'UC1-FR2.3', status: 'passed', priority: 'High' },
+    { id: 'TC-003', name: 'Verify cart updates when adding existing product', requirement: 'UC1-FR5.2', status: 'passed', priority: 'Critical' },
+    { id: 'TC-004', name: 'Test Add to Wishlist requires authentication', requirement: 'UC2-FR1.4', status: 'passed', priority: 'Critical' },
+    { id: 'TC-005', name: 'Verify wishlist persists across sessions', requirement: 'UC2-FR2.2', status: 'passed', priority: 'High' },
+    { id: 'TC-006', name: 'Test move item from wishlist to cart', requirement: 'UC2-FR5.4', status: 'passed', priority: 'High' },
+    { id: 'TC-007', name: 'Verify search filters display product counts', requirement: 'UC3-FR1.4', status: 'passed', priority: 'Medium' },
+    { id: 'TC-008', name: 'Test multi-select filter functionality', requirement: 'UC3-FR2.2', status: 'passed', priority: 'High' },
+    { id: 'TC-009', name: 'Verify filters persist during navigation', requirement: 'UC3-FR4.1', status: 'failed', priority: 'High' },
+    { id: 'TC-010', name: 'Test secure session establishment on login', requirement: 'UC4-FR3.1', status: 'passed', priority: 'Critical' },
+    { id: 'TC-011', name: 'Verify session termination on logout', requirement: 'UC4-FR5.2', status: 'passed', priority: 'Critical' },
+    { id: 'TC-012', name: 'Test email verification flow for profile update', requirement: 'UC5-FR4.3', status: 'passed', priority: 'Critical' },
+  ];
+
+  // Save test cases to Core Vault
+  const saveTestCasesToVault = async () => {
+    setTestCaseSaveStatus(prev => ({ ...prev, savingToVault: true }));
+    try {
+      const response = await fetch('/api/vault/save-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          report: {
+            reportId: `TC-SUITE-${Date.now()}`,
+            title: 'Generated Test Cases - Amazon.com Phase 2',
+            project: 'Phase 2 Demo',
+            useCase: 'All Use Cases',
+            generatedAt: new Date().toLocaleString(),
+            status: 'passed',
+            coverage: 95,
+            passRate: 92,
+            totalTests: generatedTestCases.length,
+            testsPassed: generatedTestCases.filter(tc => tc.status === 'passed').length,
+            testsFailed: generatedTestCases.filter(tc => tc.status === 'failed').length,
+            requirements: 77,
+            testCases: generatedTestCases.map(tc => ({
+              id: tc.id,
+              name: tc.name,
+              status: tc.status as 'passed' | 'failed' | 'skipped',
+              duration: '0.5s',
+              requirement: tc.requirement
+            }))
+          }
+        })
+      });
+      const result = await response.json();
+      if (result.success) {
+        setTestCaseSaveStatus(prev => ({
+          ...prev,
+          savingToVault: false,
+          vaultSaved: true,
+          vaultUrl: result.viewUrl
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to save to vault:', error);
+      setTestCaseSaveStatus(prev => ({ ...prev, savingToVault: false }));
+    }
+  };
+
+  // Sync test cases to JIRA as comment
+  const syncTestCasesToJira = async () => {
+    setTestCaseSaveStatus(prev => ({ ...prev, savingToJira: true }));
+    try {
+      const response = await fetch('/api/jira/sync-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requirementId: 'UC1',
+          report: {
+            status: 'passed',
+            coverage: 95,
+            testsPassed: generatedTestCases.filter(tc => tc.status === 'passed').length,
+            testsFailed: generatedTestCases.filter(tc => tc.status === 'failed').length,
+            testCases: generatedTestCases.map(tc => ({
+              name: `${tc.id}: ${tc.name}`,
+              passed: tc.status === 'passed'
+            })),
+            reportId: `TC-SUITE-${Date.now()}`,
+            generatedAt: new Date().toLocaleString()
+          }
+        })
+      });
+      const result = await response.json();
+      if (result.success) {
+        setTestCaseSaveStatus(prev => ({
+          ...prev,
+          savingToJira: false,
+          jiraSaved: true,
+          jiraIssueKey: result.issueKey
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to sync to JIRA:', error);
+      setTestCaseSaveStatus(prev => ({ ...prev, savingToJira: false }));
+    }
+  };
+
   const runWorkflow = async () => {
     setIsRunning(true);
     setCurrentStep(0);
     setSavedToVault(false);
+    setShowTestCases(false);
+    setTestCaseSaveStatus({ savingToVault: false, savingToJira: false, vaultSaved: false, jiraSaved: false });
     setShowJiraRequirements(true);
 
     // Step 1: Requirements Agent
@@ -225,6 +339,7 @@ export default function APEXDemoWorkflow() {
       // Trigger human review
       setShowHumanReview(true);
       setHumanReviewStep(1);
+      setShowTestCases(true); // Show generated test cases
 
       // Wait for human to click approve (don't auto-hide)
       await new Promise(resolve => {
@@ -652,6 +767,124 @@ export default function APEXDemoWorkflow() {
             >
               Approve & Continue
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Generated Test Cases Display */}
+      {showTestCases && (
+        <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center space-x-2">
+              <Code className="h-5 w-5 text-green-600" />
+              <h3 className="font-semibold text-gray-900 dark:text-white">
+                Generated Test Cases ({generatedTestCases.length})
+              </h3>
+              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                AI Generated
+              </span>
+            </div>
+            <div className="flex items-center space-x-2">
+              {/* Save to Core Vault button */}
+              {testCaseSaveStatus.vaultSaved ? (
+                <a
+                  href={testCaseSaveStatus.vaultUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-1 px-3 py-1.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded text-xs font-medium"
+                >
+                  <Eye className="h-3 w-3" />
+                  <span>View in Vault</span>
+                </a>
+              ) : (
+                <button
+                  onClick={saveTestCasesToVault}
+                  disabled={testCaseSaveStatus.savingToVault}
+                  className="flex items-center space-x-1 px-3 py-1.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 rounded text-xs font-medium transition disabled:opacity-50"
+                >
+                  {testCaseSaveStatus.savingToVault ? (
+                    <RefreshCw className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Upload className="h-3 w-3" />
+                  )}
+                  <span>{testCaseSaveStatus.savingToVault ? 'Saving...' : 'Save to Vault'}</span>
+                </button>
+              )}
+
+              {/* Sync to JIRA button */}
+              {testCaseSaveStatus.jiraSaved ? (
+                <a
+                  href={`https://progrediai.atlassian.net/browse/${testCaseSaveStatus.jiraIssueKey}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center space-x-1 px-3 py-1.5 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded text-xs font-medium"
+                >
+                  <CheckCircle className="h-3 w-3" />
+                  <span>{testCaseSaveStatus.jiraIssueKey}</span>
+                </a>
+              ) : (
+                <button
+                  onClick={syncTestCasesToJira}
+                  disabled={testCaseSaveStatus.savingToJira}
+                  className="flex items-center space-x-1 px-3 py-1.5 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50 rounded text-xs font-medium transition disabled:opacity-50"
+                >
+                  {testCaseSaveStatus.savingToJira ? (
+                    <RefreshCw className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Link2 className="h-3 w-3" />
+                  )}
+                  <span>{testCaseSaveStatus.savingToJira ? 'Syncing...' : 'Sync to JIRA'}</span>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Test Cases Table */}
+          <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0">
+                <tr>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Test Case</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Requirement</th>
+                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
+                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                {generatedTestCases.map(tc => (
+                  <tr key={tc.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <td className="px-3 py-2 font-mono text-xs text-gray-600 dark:text-gray-400">{tc.id}</td>
+                    <td className="px-3 py-2 text-gray-800 dark:text-gray-200">{tc.name}</td>
+                    <td className="px-3 py-2">
+                      <span className="font-mono text-xs px-1.5 py-0.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded">
+                        {tc.requirement}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2">
+                      <span className={`text-xs px-1.5 py-0.5 rounded ${
+                        tc.priority === 'Critical' ? 'bg-red-100 text-red-700' :
+                        tc.priority === 'High' ? 'bg-orange-100 text-orange-700' :
+                        'bg-gray-100 text-gray-600'
+                      }`}>
+                        {tc.priority}
+                      </span>
+                    </td>
+                    <td className="px-3 py-2 text-center">
+                      {tc.status === 'passed' ? (
+                        <CheckCircle className="h-4 w-4 text-green-600 mx-auto" />
+                      ) : (
+                        <XCircle className="h-4 w-4 text-red-600 mx-auto" />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-2 text-xs text-gray-500 flex items-center justify-between">
+            <span>Showing sample of {generatedTestCases.length} generated test cases (127 total)</span>
+            <span className="text-green-600">{generatedTestCases.filter(tc => tc.status === 'passed').length} passed, {generatedTestCases.filter(tc => tc.status === 'failed').length} failed</span>
           </div>
         </div>
       )}
