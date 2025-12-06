@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
   TestTube2,
   FileText,
@@ -80,6 +81,20 @@ const agents: Agent[] = [
   }
 ];
 
+// Component that handles URL search params
+function TabFromUrl({ setActiveTab }: { setActiveTab: (tab: 'overview' | 'agents' | 'demo' | 'metrics' | 'vault') => void }) {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && ['overview', 'agents', 'demo', 'metrics', 'vault'].includes(tab)) {
+      setActiveTab(tab as 'overview' | 'agents' | 'demo' | 'metrics' | 'vault');
+    }
+  }, [searchParams, setActiveTab]);
+
+  return null;
+}
+
 export default function CoreAPEXPage() {
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null);
   const [activeTab, setActiveTab] = useState<'overview' | 'agents' | 'demo' | 'metrics' | 'vault'>('overview');
@@ -104,6 +119,11 @@ export default function CoreAPEXPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex flex-col">
+      {/* Handle URL tab parameter */}
+      <Suspense fallback={null}>
+        <TabFromUrl setActiveTab={setActiveTab} />
+      </Suspense>
+
       {/* Progredi Branded Header */}
       <BrandingHeader />
 

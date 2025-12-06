@@ -77,7 +77,7 @@ export default function APEXPresentationPage() {
   }, [nextSlide, prevSlide]);
 
   const handleLiveDemo = () => {
-    router.push('/');
+    router.push('/?tab=demo');
   };
 
   return (
