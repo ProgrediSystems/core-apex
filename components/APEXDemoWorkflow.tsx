@@ -51,11 +51,16 @@ export default function APEXDemoWorkflow() {
   const [testCaseSaveStatus, setTestCaseSaveStatus] = useState<{
     savingToVault: boolean;
     savingToJira: boolean;
+    creatingJiraSuite: boolean;
     vaultSaved: boolean;
     jiraSaved: boolean;
+    jiraSuiteCreated: boolean;
     vaultUrl?: string;
     jiraIssueKey?: string;
-  }>({ savingToVault: false, savingToJira: false, vaultSaved: false, jiraSaved: false });
+    jiraSuiteKey?: string;
+    jiraSuiteUrl?: string;
+    jiraTestsCreated?: number;
+  }>({ savingToVault: false, savingToJira: false, creatingJiraSuite: false, vaultSaved: false, jiraSaved: false, jiraSuiteCreated: false });
   const [showTestCases, setShowTestCases] = useState(false);
   const [showComplianceDetails, setShowComplianceDetails] = useState(false);
   const [complianceResults, setComplianceResults] = useState<{
@@ -291,6 +296,51 @@ export default function APEXDemoWorkflow() {
     }
   };
 
+  // Create test suite with test cases as visible JIRA issues
+  const createJiraTestSuite = async () => {
+    setTestCaseSaveStatus(prev => ({ ...prev, creatingJiraSuite: true }));
+    try {
+      const passRate = Math.round((generatedTestCases.filter(tc => tc.status === 'passed').length / generatedTestCases.length) * 100);
+
+      const response = await fetch('/api/jira/create-test-suite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          projectKey: 'SCRUM',
+          suite: {
+            name: 'Amazon.com Phase 2',
+            useCase: 'All Use Cases (UC1-UC5)',
+            passRate,
+            testCases: generatedTestCases.map(tc => ({
+              id: tc.id,
+              name: tc.name,
+              requirement: tc.requirement,
+              priority: tc.priority,
+              status: tc.status
+            }))
+          }
+        })
+      });
+      const result = await response.json();
+      if (result.success) {
+        setTestCaseSaveStatus(prev => ({
+          ...prev,
+          creatingJiraSuite: false,
+          jiraSuiteCreated: true,
+          jiraSuiteKey: result.parentIssue?.key,
+          jiraSuiteUrl: result.boardUrl,
+          jiraTestsCreated: result.testCasesCreated
+        }));
+      } else {
+        console.error('Failed to create JIRA suite:', result.errors);
+        setTestCaseSaveStatus(prev => ({ ...prev, creatingJiraSuite: false }));
+      }
+    } catch (error) {
+      console.error('Failed to create JIRA test suite:', error);
+      setTestCaseSaveStatus(prev => ({ ...prev, creatingJiraSuite: false }));
+    }
+  };
+
   const runWorkflow = async () => {
     setIsRunning(true);
     setCurrentStep(0);
@@ -298,7 +348,7 @@ export default function APEXDemoWorkflow() {
     setShowTestCases(false);
     setShowComplianceDetails(false);
     setComplianceResults(null);
-    setTestCaseSaveStatus({ savingToVault: false, savingToJira: false, vaultSaved: false, jiraSaved: false });
+    setTestCaseSaveStatus({ savingToVault: false, savingToJira: false, creatingJiraSuite: false, vaultSaved: false, jiraSaved: false, jiraSuiteCreated: false });
     setShowJiraRequirements(true);
 
     // Step 1: Requirements Agent
@@ -897,28 +947,30 @@ export default function APEXDemoWorkflow() {
               )}
 
               {/* Sync to JIRA button */}
-              {testCaseSaveStatus.jiraSaved ? (
+              {/* Create Test Suite in JIRA (creates visible issues on board) */}
+              {testCaseSaveStatus.jiraSuiteCreated ? (
                 <a
-                  href={`https://progrediai.atlassian.net/browse/${testCaseSaveStatus.jiraIssueKey}`}
+                  href={testCaseSaveStatus.jiraSuiteUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center space-x-1 px-3 py-1.5 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 rounded text-xs font-medium"
+                  className="flex items-center space-x-1 px-3 py-1.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 rounded text-xs font-medium"
                 >
                   <CheckCircle className="h-3 w-3" />
-                  <span>{testCaseSaveStatus.jiraIssueKey}</span>
+                  <span>View {testCaseSaveStatus.jiraTestsCreated} Tests in JIRA</span>
+                  <ExternalLink className="h-3 w-3" />
                 </a>
               ) : (
                 <button
-                  onClick={syncTestCasesToJira}
-                  disabled={testCaseSaveStatus.savingToJira}
-                  className="flex items-center space-x-1 px-3 py-1.5 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50 rounded text-xs font-medium transition disabled:opacity-50"
+                  onClick={createJiraTestSuite}
+                  disabled={testCaseSaveStatus.creatingJiraSuite}
+                  className="flex items-center space-x-1 px-3 py-1.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50 rounded text-xs font-medium transition disabled:opacity-50"
                 >
-                  {testCaseSaveStatus.savingToJira ? (
+                  {testCaseSaveStatus.creatingJiraSuite ? (
                     <RefreshCw className="h-3 w-3 animate-spin" />
                   ) : (
-                    <Link2 className="h-3 w-3" />
+                    <ExternalLink className="h-3 w-3" />
                   )}
-                  <span>{testCaseSaveStatus.savingToJira ? 'Syncing...' : 'Sync to JIRA'}</span>
+                  <span>{testCaseSaveStatus.creatingJiraSuite ? 'Creating...' : 'Create in JIRA Board'}</span>
                 </button>
               )}
             </div>
