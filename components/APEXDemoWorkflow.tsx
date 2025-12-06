@@ -788,9 +788,18 @@ export default function APEXDemoWorkflow() {
                 {jiraRequirements.filter(r => r.useCase === useCase).map(req => (
                   <div key={req.key} className="flex items-center justify-between px-3 py-1.5 border-t border-gray-50 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/50">
                     <div className="flex items-center space-x-2 flex-1 min-w-0">
-                      <span className={`text-xs font-mono px-1.5 py-0.5 rounded ${
-                        req.type === 'Story' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
-                      }`}>{req.key}</span>
+                      <a
+                        href={`https://progrediai.atlassian.net/browse/SCRUM-${req.key.replace(/[^0-9]/g, '') || '1'}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`text-xs font-mono px-1.5 py-0.5 rounded hover:underline cursor-pointer flex items-center space-x-1 ${
+                          req.type === 'Story' ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                        title={`Open ${req.key} in JIRA`}
+                      >
+                        <span>{req.key}</span>
+                        <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
                       <span className="text-xs text-gray-700 dark:text-gray-300 truncate">{req.summary}</span>
                     </div>
                     <span className={`text-xs px-1.5 py-0.5 rounded flex-shrink-0 ml-2 ${
@@ -805,8 +814,18 @@ export default function APEXDemoWorkflow() {
               </div>
             ))}
           </div>
-          <div className="mt-2 text-xs text-gray-500 text-center">
-            Scroll to view all {jiraRequirements.length} requirements from 5 Amazon.com use cases
+          <div className="mt-2 text-xs text-gray-500 flex items-center justify-center space-x-2">
+            <span>Scroll to view all {jiraRequirements.length} requirements from 5 Amazon.com use cases</span>
+            <span className="text-gray-400">•</span>
+            <a
+              href="https://progrediai.atlassian.net/jira/software/projects/SCRUM/boards/1"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 hover:text-blue-700 hover:underline flex items-center space-x-1"
+            >
+              <span>View JIRA Board</span>
+              <ExternalLink className="h-3 w-3" />
+            </a>
           </div>
         </div>
       )}
@@ -923,9 +942,16 @@ export default function APEXDemoWorkflow() {
                     <td className="px-3 py-2 font-mono text-xs text-gray-600 dark:text-gray-400">{tc.id}</td>
                     <td className="px-3 py-2 text-gray-800 dark:text-gray-200">{tc.name}</td>
                     <td className="px-3 py-2">
-                      <span className="font-mono text-xs px-1.5 py-0.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded">
-                        {tc.requirement}
-                      </span>
+                      <a
+                        href={`https://progrediai.atlassian.net/browse/SCRUM-${tc.requirement.replace(/[^0-9]/g, '') || '1'}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-xs px-1.5 py-0.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded hover:bg-indigo-200 dark:hover:bg-indigo-900/50 hover:underline inline-flex items-center space-x-1"
+                        title={`Open ${tc.requirement} in JIRA`}
+                      >
+                        <span>{tc.requirement}</span>
+                        <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
                     </td>
                     <td className="px-3 py-2">
                       <span className={`text-xs px-1.5 py-0.5 rounded ${
@@ -1342,7 +1368,18 @@ export default function APEXDemoWorkflow() {
                   Key Demo Insights
                 </h4>
                 <ul className="text-sm text-gray-600 dark:text-gray-400 space-y-1">
-                  <li>• Parsed all 77 functional requirements from 5 Amazon.com use cases</li>
+                  <li className="flex items-center flex-wrap">
+                    <span>• Parsed all 77 functional requirements from</span>
+                    <a
+                      href="https://progrediai.atlassian.net/jira/software/projects/SCRUM/boards/1"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-1 text-blue-600 hover:text-blue-700 hover:underline inline-flex items-center"
+                    >
+                      <span>JIRA Project SCRUM</span>
+                      <ExternalLink className="h-3 w-3 ml-0.5" />
+                    </a>
+                  </li>
                   <li>• UC1: Add to Cart (15 FRs) • UC2: Wishlist (20 FRs) • UC3: Filters (24 FRs)</li>
                   <li>• UC4: Login/Logout (20 FRs) • UC5: Profile (18 FRs)</li>
                   <li>• Human review approved test cases for {jiraRequirements.filter(r => r.priority === 'Critical').length} critical requirements</li>
@@ -1368,6 +1405,15 @@ export default function APEXDemoWorkflow() {
                   </div>
                 </div>
               )}
+              <a
+                href="https://progrediai.atlassian.net/jira/software/projects/SCRUM/boards/1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition flex items-center space-x-2"
+              >
+                <ExternalLink className="h-4 w-4" />
+                <span>View in JIRA</span>
+              </a>
               <a
                 href="https://corevault.progrediai.com"
                 target="_blank"
