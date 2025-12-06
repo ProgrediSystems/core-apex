@@ -24,7 +24,9 @@ import {
   ChevronRight,
   Play,
   AlertTriangle,
-  Archive
+  Archive,
+  ExternalLink,
+  Link2
 } from 'lucide-react';
 
 export default function APEXPresentationPage() {
@@ -293,32 +295,38 @@ export default function APEXPresentationPage() {
                   {
                     name: 'Requirements Agent',
                     icon: '📋',
-                    description: 'Ingests from JIRA, DOORS, PDFs - identifies ambiguities'
+                    description: 'Live JIRA integration • Parses requirements with traceability links',
+                    highlight: 'JIRA Connected'
                   },
                   {
                     name: 'Test Design Agent',
                     icon: '🧪',
-                    description: 'Generates 5-10 test scenarios per requirement'
+                    description: 'Generates test cases with requirement mapping • Human review approval',
+                    highlight: 'Human-in-Loop'
                   },
                   {
                     name: 'Execution Agent',
                     icon: '⚡',
-                    description: 'Runs 500 tests in parallel with CI/CD integration'
+                    description: 'Runs 500 tests in parallel with CI/CD integration',
+                    highlight: null
                   },
                   {
                     name: 'Analysis Agent',
                     icon: '🔍',
-                    description: '75% accuracy predicting defects before they occur'
+                    description: '75% accuracy predicting defects before they occur',
+                    highlight: null
                   },
                   {
                     name: 'Maintenance Agent',
                     icon: '🔧',
-                    description: 'Auto-updates tests when code changes - saves 100+ hrs/month'
+                    description: 'Auto-updates tests when code changes • Syncs back to JIRA',
+                    highlight: 'Bi-directional'
                   },
                   {
                     name: 'Compliance Agent',
                     icon: '✅',
-                    description: 'Section 508, DISA STIGs, RMF docs automated'
+                    description: 'Section 508 (6 checks) • FIPS 140-2 (5 checks) • DISA STIGs (8 checks)',
+                    highlight: '19 Total Checks'
                   }
                 ].map((agent, index) => (
                   <div
@@ -326,14 +334,42 @@ export default function APEXPresentationPage() {
                     className={`bg-gradient-to-br from-indigo-900/30 to-purple-900/20 border border-indigo-500/30 rounded-xl p-6 transform transition-all ${animateMetrics ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}
                     style={{ transitionDelay: `${index * 150}ms` }}
                   >
-                    <div className="text-3xl mb-3">{agent.icon}</div>
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="text-3xl">{agent.icon}</div>
+                      {agent.highlight && (
+                        <span className="text-xs bg-indigo-600/50 text-indigo-200 px-2 py-0.5 rounded-full">
+                          {agent.highlight}
+                        </span>
+                      )}
+                    </div>
                     <h3 className="text-lg font-bold mb-2">{agent.name}</h3>
                     <p className="text-sm text-gray-400">{agent.description}</p>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-8 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 border border-white/10 rounded-xl p-6">
+              <div className="mt-8 grid md:grid-cols-2 gap-4">
+                <div className="bg-gradient-to-r from-blue-600/20 to-blue-700/20 border border-blue-500/30 rounded-xl p-4">
+                  <div className="flex items-center space-x-3">
+                    <Link2 className="h-8 w-8 text-blue-400" />
+                    <div>
+                      <h3 className="text-lg font-bold">JIRA Integration</h3>
+                      <p className="text-sm text-gray-400">Bi-directional sync with requirements & test results</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gradient-to-r from-indigo-600/20 to-indigo-700/20 border border-indigo-500/30 rounded-xl p-4">
+                  <div className="flex items-center space-x-3">
+                    <Archive className="h-8 w-8 text-indigo-400" />
+                    <div>
+                      <h3 className="text-lg font-bold">Core Vault</h3>
+                      <p className="text-sm text-gray-400">Persistent artifact storage with versioning</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 bg-gradient-to-r from-indigo-600/20 to-purple-600/20 border border-white/10 rounded-xl p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-xl font-bold mb-2">Powered by Claude Sonnet 4.0</h3>
@@ -357,37 +393,35 @@ export default function APEXPresentationPage() {
 
                 <div className="grid md:grid-cols-2 gap-8 mb-8">
                   <div>
-                    <h4 className="text-lg font-semibold mb-4 text-indigo-300">Live Demo: Amazon.com Test Suite</h4>
+                    <h4 className="text-lg font-semibold mb-4 text-indigo-300">Live Demo: Amazon.com Test Suite (77 Requirements)</h4>
                     <ul className="space-y-2 text-gray-300">
                       <li className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
-                        <span>5 Amazon.com use cases → Complete test coverage</span>
+                        <span>5 Amazon.com use cases → 77 functional requirements</span>
                       </li>
                       <li className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
-                        <span>UC1: Add to Cart (5 requirements, 15 test cases)</span>
+                        <span>UC1: Add to Cart (15 FRs) • UC2: Wishlist (20 FRs)</span>
                       </li>
                       <li className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
-                        <span>UC2: Wishlist Management (5 requirements)</span>
+                        <span>UC3: Search Filters (24 FRs) • UC4: Login (20 FRs)</span>
                       </li>
                       <li className="flex items-start">
                         <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
-                        <span>UC3: Search Filters (6 requirements)</span>
+                        <span>UC5: Profile Management (18 FRs)</span>
                       </li>
                       <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
-                        <span>UC4: Login/Logout (5 requirements)</span>
+                        <Link2 className="h-5 w-5 text-blue-400 mr-2 mt-0.5" />
+                        <span>Live JIRA integration with clickable requirement links</span>
                       </li>
                       <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
-                        <span>UC5: Profile Management (6 requirements)</span>
+                        <Shield className="h-5 w-5 text-purple-400 mr-2 mt-0.5" />
+                        <span>Detailed compliance: Section 508 (6 checks), FIPS 140-2 (5 checks), DISA STIGs (8 checks)</span>
                       </li>
                       <li className="flex items-start">
-                        <CheckCircle className="h-5 w-5 text-green-400 mr-2 mt-0.5" />
-                        <span className="flex items-center">
-                          Full compliance with Section 508, FIPS, DISA STIGs
-                        </span>
+                        <Archive className="h-5 w-5 text-indigo-400 mr-2 mt-0.5" />
+                        <span>Core Vault integration for persistent artifact storage</span>
                       </li>
                     </ul>
                   </div>
@@ -397,21 +431,28 @@ export default function APEXPresentationPage() {
                     <div className="space-y-3">
                       <div className="bg-black/30 rounded-lg p-3">
                         <div className="flex justify-between">
-                          <span className="text-gray-400">Time to Generate Tests</span>
-                          <span className="text-xl font-bold text-green-400">4.2 min</span>
+                          <span className="text-gray-400">Requirements Parsed</span>
+                          <span className="text-xl font-bold text-green-400">77</span>
+                        </div>
+                      </div>
+                      <div className="bg-black/30 rounded-lg p-3">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Tests Generated</span>
+                          <span className="text-xl font-bold text-blue-400">127</span>
                         </div>
                       </div>
                       <div className="bg-black/30 rounded-lg p-3">
                         <div className="flex justify-between">
                           <span className="text-gray-400">Requirement Coverage</span>
-                          <span className="text-xl font-bold text-blue-400">95%</span>
+                          <span className="text-xl font-bold text-purple-400">95%</span>
                         </div>
                       </div>
                       <div className="bg-black/30 rounded-lg p-3">
                         <div className="flex justify-between">
                           <span className="text-gray-400">Compliance Score</span>
-                          <span className="text-xl font-bold text-purple-400">98%</span>
+                          <span className="text-xl font-bold text-orange-400">89%</span>
                         </div>
+                        <p className="text-xs text-gray-500 mt-1">2 STIG findings identified</p>
                       </div>
                     </div>
                   </div>
@@ -429,13 +470,32 @@ export default function APEXPresentationPage() {
                   This is not a mockup - this is our working MVP running on AWS GovCloud
                 </p>
 
-                <div className="mt-6 bg-gradient-to-r from-blue-600/20 to-indigo-600/20 border border-blue-500/30 rounded-lg p-4">
-                  <div className="flex items-center justify-center space-x-3">
-                    <Archive className="h-6 w-6 text-blue-400" />
-                    <p className="text-sm">
-                      <span className="font-semibold">Core Vault Integration:</span> All test reports automatically saved with version control for team collaboration
-                    </p>
-                  </div>
+                {/* Integration Badges */}
+                <div className="mt-6 grid md:grid-cols-2 gap-4">
+                  <a
+                    href="https://progrediai.atlassian.net/jira/software/projects/SCRUM/boards/1"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-blue-600/20 to-blue-700/20 border border-blue-500/30 rounded-lg p-4 hover:bg-blue-600/30 transition flex items-center justify-center space-x-3"
+                  >
+                    <ExternalLink className="h-5 w-5 text-blue-400" />
+                    <div className="text-center">
+                      <p className="text-sm font-semibold">Live JIRA Integration</p>
+                      <p className="text-xs text-gray-400">Click to view project board</p>
+                    </div>
+                  </a>
+                  <a
+                    href="https://corevault.progrediai.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-indigo-600/20 to-indigo-700/20 border border-indigo-500/30 rounded-lg p-4 hover:bg-indigo-600/30 transition flex items-center justify-center space-x-3"
+                  >
+                    <Archive className="h-5 w-5 text-indigo-400" />
+                    <div className="text-center">
+                      <p className="text-sm font-semibold">Core Vault Storage</p>
+                      <p className="text-xs text-gray-400">Persistent test artifact repository</p>
+                    </div>
+                  </a>
                 </div>
               </div>
             </div>
