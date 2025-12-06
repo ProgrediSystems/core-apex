@@ -2,14 +2,14 @@
 
 ## AI-Powered Testing Automation for Navy Systems
 
-Core APEX transforms manual testing with AI agents that generate, execute, and maintain test suites. Built specifically for PEO MLB, Core APEX reduces test development time by 90% while ensuring DoD compliance.
+Core APEX transforms manual testing with AI agents that generate, execute, and maintain test suites. Built specifically for PEO MLB, Core APEX significantly reduces test development time while working toward DoD compliance.
 
-## 🚀 Key Features
+## Key Features
 
-- **90% Reduction** in test development time
-- **75% Accuracy** in predictive defect detection
-- **$2M+ Annual Savings** in operational costs
-- **FedRAMP Ready** architecture
+- **Significant Reduction** in test development time
+- **AI-Powered** defect detection capabilities
+- **Cost Savings** through automation
+- **Security-First** architecture
 - **Human-in-the-Loop** governance
 
 ## 🤖 Six Specialized AI Agents
@@ -21,13 +21,13 @@ Core APEX transforms manual testing with AI agents that generate, execute, and m
 5. **Maintenance Agent** - Automatically updates tests when code changes
 6. **Compliance Agent** - Ensures Section 508 and DoD standards compliance
 
-## 🛠️ Technology Stack
+## Technology Stack
 
-- **AI**: Claude Sonnet 4.0 via AWS Bedrock
+- **AI**: Claude Sonnet 4.0
 - **Frontend**: Next.js 15, React 19, TypeScript
-- **Backend**: Node.js, AWS Lambda
-- **Infrastructure**: AWS Amplify, Kubernetes
-- **Deployment**: AWS GovCloud (FedRAMP)
+- **Backend**: Node.js, API Routes
+- **Infrastructure**: AWS Amplify (MVP), designed for AWS GovCloud
+- **Deployment**: AWS Amplify Hosting (production target: AWS GovCloud)
 
 ## 🔧 Local Development
 
@@ -70,13 +70,11 @@ Core APEX is deployed using AWS Amplify:
 2. Builds and deploys to AWS Amplify hosting
 3. Accessible at: `https://coreapex.progrediai.com`
 
-## 🔐 Security & Compliance
+## Security & Compliance
 
-- **FedRAMP Moderate** design principles
-- **IL4** architecture for CUI systems
-- **FIPS 140-2** encryption
-- **Section 508** accessibility compliance
-- **DISA STIG** alignment
+- **Security-First** design principles
+- **Section 508** accessibility compliance targets
+- **DISA STIG** alignment goals
 - **Human review** for all AI-generated outputs
 
 ## 🎯 Integration Points

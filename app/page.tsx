@@ -180,18 +180,19 @@ export default function CoreAPEXPage() {
                 Teams currently spend 60-70% of their time writing test scripts - we reduce that to minutes.
               </p>
 
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Projected Phase 2 Targets</p>
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-6">
                   <div className="text-3xl font-bold text-green-600 mb-2">90%</div>
-                  <div className="text-sm text-gray-700 dark:text-gray-300">Reduction in test development time</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">Target reduction in test development time</div>
                 </div>
                 <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-6">
                   <div className="text-3xl font-bold text-blue-600 mb-2">75%</div>
-                  <div className="text-sm text-gray-700 dark:text-gray-300">Predictive accuracy for defects</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">Goal for predictive defect detection</div>
                 </div>
                 <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-6">
                   <div className="text-3xl font-bold text-purple-600 mb-2">$2M+</div>
-                  <div className="text-sm text-gray-700 dark:text-gray-300">Annual cost savings</div>
+                  <div className="text-sm text-gray-700 dark:text-gray-300">Projected annual cost savings</div>
                 </div>
               </div>
             </div>
@@ -221,9 +222,9 @@ export default function CoreAPEXPage() {
                 <div className="flex items-start space-x-3">
                   <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0 mt-0.5" />
                   <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white">FedRAMP Compliant</h4>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">Security Focused</h4>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      Designed for FedRAMP Moderate with IL4 support for CUI systems
+                      Designed with security best practices for defense applications
                     </p>
                   </div>
                 </div>
@@ -403,7 +404,7 @@ export default function CoreAPEXPage() {
                   <div className="flex-1">
                     <div className="font-semibold text-gray-900 dark:text-white mb-1">Phase 3: Enterprise</div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                      FedRAMP ATO, IL4 deployment, 20+ applications, $2M+ savings
+                      Enterprise deployment, 20+ applications, significant cost savings
                     </p>
                   </div>
                 </div>

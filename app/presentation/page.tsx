@@ -233,26 +233,27 @@ export default function APEXPresentationPage() {
                 Core APEX: The Game Changer
               </h2>
 
+              <p className="text-sm text-gray-400 mb-4 text-center">Projected Phase 2 Targets</p>
               <div className="grid md:grid-cols-3 gap-6 mb-12">
                 <div className={`bg-gradient-to-br from-green-900/30 to-green-800/20 border border-green-500/30 rounded-xl p-6 transform transition-all duration-500 ${animateMetrics ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
                   <TrendingUp className="h-10 w-10 text-green-400 mb-4" />
                   <div className="text-4xl font-bold text-green-400 mb-2">90%</div>
-                  <div className="text-lg font-semibold mb-2">Time Reduction</div>
+                  <div className="text-lg font-semibold mb-2">Time Reduction Target</div>
                   <p className="text-sm text-gray-400">From 400 to 40 hours per sprint</p>
                 </div>
 
                 <div className={`bg-gradient-to-br from-blue-900/30 to-blue-800/20 border border-blue-500/30 rounded-xl p-6 transform transition-all duration-700 ${animateMetrics ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
                   <Target className="h-10 w-10 text-blue-400 mb-4" />
                   <div className="text-4xl font-bold text-blue-400 mb-2">75%</div>
-                  <div className="text-lg font-semibold mb-2">Defect Prediction</div>
-                  <p className="text-sm text-gray-400">AI predicts issues before they occur</p>
+                  <div className="text-lg font-semibold mb-2">Defect Prediction Goal</div>
+                  <p className="text-sm text-gray-400">AI-powered issue detection</p>
                 </div>
 
                 <div className={`bg-gradient-to-br from-purple-900/30 to-purple-800/20 border border-purple-500/30 rounded-xl p-6 transform transition-all duration-900 ${animateMetrics ? 'scale-100 opacity-100' : 'scale-95 opacity-0'}`}>
                   <DollarSign className="h-10 w-10 text-purple-400 mb-4" />
                   <div className="text-4xl font-bold text-purple-400 mb-2">$2M+</div>
-                  <div className="text-lg font-semibold mb-2">Year 1 Savings</div>
-                  <p className="text-sm text-gray-400">Direct cost reduction guaranteed</p>
+                  <div className="text-lg font-semibold mb-2">Projected Savings</div>
+                  <p className="text-sm text-gray-400">Based on industry benchmarks</p>
                 </div>
               </div>
 
@@ -307,13 +308,13 @@ export default function APEXPresentationPage() {
                   {
                     name: 'Execution Agent',
                     icon: '⚡',
-                    description: 'Runs 500 tests in parallel with CI/CD integration',
+                    description: 'Parallel test execution with CI/CD integration',
                     highlight: null
                   },
                   {
                     name: 'Analysis Agent',
                     icon: '🔍',
-                    description: '75% accuracy predicting defects before they occur',
+                    description: 'AI-powered defect pattern recognition and prediction',
                     highlight: null
                   },
                   {
@@ -373,7 +374,7 @@ export default function APEXPresentationPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-xl font-bold mb-2">Powered by Claude Sonnet 4.0</h3>
-                    <p className="text-gray-300">AWS GovCloud • FedRAMP Ready • Human-in-the-Loop Governance</p>
+                    <p className="text-gray-300">Designed for AWS GovCloud (FedRAMP) • Human-in-the-Loop Governance</p>
                   </div>
                   <Shield className="h-12 w-12 text-indigo-400" />
                 </div>
@@ -467,7 +468,7 @@ export default function APEXPresentationPage() {
                 </button>
 
                 <p className="text-center text-sm text-gray-400 mt-4">
-                  This is not a mockup - this is our working MVP running on AWS GovCloud
+                  This is not a mockup - this is our working MVP running on AWS
                 </p>
 
                 {/* Integration Badges */}
@@ -586,7 +587,7 @@ export default function APEXPresentationPage() {
                   {
                     phase: 'Phase 3: Enterprise',
                     months: 'Months 7-9',
-                    description: 'PEO-wide deployment, FedRAMP certification, custom AI training',
+                    description: 'PEO-wide deployment, security certification, custom AI training',
                     color: 'from-purple-600/20 to-pink-600/20'
                   },
                   {
@@ -631,17 +632,17 @@ export default function APEXPresentationPage() {
                 <div className="bg-gradient-to-br from-purple-900/30 to-pink-900/20 border border-purple-500/30 rounded-xl p-6">
                   <Cpu className="h-10 w-10 text-purple-400 mb-4" />
                   <h3 className="text-lg font-bold mb-2">AI Expertise</h3>
-                  <p className="text-sm text-gray-400">Pioneers in AI-powered defense solutions with proven DoD track record</p>
+                  <p className="text-sm text-gray-400">Building AI-powered defense solutions with modern architectures</p>
                 </div>
                 <div className="bg-gradient-to-br from-blue-900/30 to-cyan-900/20 border border-blue-500/30 rounded-xl p-6">
                   <Shield className="h-10 w-10 text-blue-400 mb-4" />
                   <h3 className="text-lg font-bold mb-2">Security First</h3>
-                  <p className="text-sm text-gray-400">FedRAMP ready, IL4/5 capable, zero-trust architecture</p>
+                  <p className="text-sm text-gray-400">Designed with security best practices and zero-trust principles</p>
                 </div>
                 <div className="bg-gradient-to-br from-green-900/30 to-teal-900/20 border border-green-500/30 rounded-xl p-6">
                   <Users className="h-10 w-10 text-green-400 mb-4" />
-                  <h3 className="text-lg font-bold mb-2">Navy Veterans</h3>
-                  <p className="text-sm text-gray-400">Team includes former Navy officers who understand the mission</p>
+                  <h3 className="text-lg font-bold mb-2">Mission Focused</h3>
+                  <p className="text-sm text-gray-400">Dedicated to understanding and solving defense testing challenges</p>
                 </div>
               </div>
 
