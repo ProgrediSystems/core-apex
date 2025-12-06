@@ -16,7 +16,8 @@ import {
   Search,
   Filter,
   RefreshCw,
-  Link2
+  Link2,
+  Upload
 } from 'lucide-react';
 import BrandingHeader from '@/components/BrandingHeader';
 import BrandingFooter from '@/components/BrandingFooter';
@@ -32,10 +33,17 @@ interface TestReport {
   compliance: number;
   status: 'completed' | 'in-progress' | 'failed';
   savedBy: string;
-  vaultUrl?: string;
   requirementId?: string; // e.g., UC1-FR1 for JIRA mapping
   jiraSynced?: boolean;
   jiraIssueKey?: string;
+}
+
+interface VaultSaveStatus {
+  saved: boolean;
+  saving: boolean;
+  artifactId?: string;
+  viewUrl?: string;
+  error?: string;
 }
 
 export default function VaultIntegration() {
@@ -43,6 +51,7 @@ export default function VaultIntegration() {
   const [searchTerm, setSearchTerm] = useState('');
   const [syncingReport, setSyncingReport] = useState<string | null>(null);
   const [syncStatus, setSyncStatus] = useState<Record<string, { synced: boolean; issueKey?: string }>>({});
+  const [vaultStatus, setVaultStatus] = useState<Record<string, VaultSaveStatus>>({});
 
   // Amazon.com Phase 2 Test Reports - All 77 functional requirements
   const reports: TestReport[] = [
@@ -57,7 +66,6 @@ export default function VaultIntegration() {
       compliance: 98,
       status: 'completed',
       savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/report/RPT-2025-001',
       requirementId: 'UC1'
     },
     {
@@ -71,7 +79,6 @@ export default function VaultIntegration() {
       compliance: 100,
       status: 'completed',
       savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/report/RPT-2025-002',
       requirementId: 'UC4'
     },
     {
@@ -85,7 +92,6 @@ export default function VaultIntegration() {
       compliance: 95,
       status: 'completed',
       savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/report/RPT-2025-003',
       requirementId: 'UC2'
     },
     {
@@ -99,7 +105,6 @@ export default function VaultIntegration() {
       compliance: 94,
       status: 'completed',
       savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/report/RPT-2025-004',
       requirementId: 'UC3'
     },
     {
@@ -113,7 +118,6 @@ export default function VaultIntegration() {
       compliance: 96,
       status: 'completed',
       savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/report/RPT-2025-005',
       requirementId: 'UC5'
     },
     {
@@ -127,10 +131,80 @@ export default function VaultIntegration() {
       compliance: 98,
       status: 'completed',
       savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/report/RPT-2025-006',
-      requirementId: 'UC1' // Will sync to first UC as example
+      requirementId: 'UC1'
     }
   ];
+
+  // Save report to Core Vault
+  const saveToVault = async (report: TestReport) => {
+    setVaultStatus(prev => ({
+      ...prev,
+      [report.id]: { saved: false, saving: true }
+    }));
+
+    try {
+      // Generate test case data for the report
+      const testCases = Array.from({ length: Math.min(report.tests, 15) }, (_, i) => {
+        const passed = i < Math.round(15 * (report.passRate / 100));
+        return {
+          id: `TC-${String(i + 1).padStart(3, '0')}`,
+          name: `${report.name.split(':')[1]?.trim() || 'Test Case'} - Scenario ${i + 1}`,
+          status: passed ? 'passed' as const : 'failed' as const,
+          duration: `${(Math.random() * 2 + 0.5).toFixed(2)}s`,
+          requirement: `${report.requirementId || 'REQ'}-FR${i + 1}`
+        };
+      });
+
+      const response = await fetch('/api/vault/save-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          report: {
+            reportId: report.id,
+            title: report.name,
+            project: report.project,
+            useCase: report.requirementId || 'General',
+            generatedAt: formatDate(report.date),
+            status: report.passRate >= 90 ? 'passed' : report.passRate >= 70 ? 'partial' : 'failed',
+            coverage: report.compliance,
+            passRate: report.passRate,
+            totalTests: report.tests,
+            testsPassed: Math.round(report.tests * (report.passRate / 100)),
+            testsFailed: Math.round(report.tests * ((100 - report.passRate) / 100)),
+            requirements: report.requirements,
+            testCases
+          }
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setVaultStatus(prev => ({
+          ...prev,
+          [report.id]: {
+            saved: true,
+            saving: false,
+            artifactId: result.artifactId,
+            viewUrl: result.viewUrl
+          }
+        }));
+      } else {
+        setVaultStatus(prev => ({
+          ...prev,
+          [report.id]: { saved: false, saving: false, error: result.error }
+        }));
+        alert(`Save failed: ${result.error}`);
+      }
+    } catch (error) {
+      setVaultStatus(prev => ({
+        ...prev,
+        [report.id]: { saved: false, saving: false, error: 'Failed to save to Core Vault' }
+      }));
+      alert('Failed to save to Core Vault');
+      console.error(error);
+    }
+  };
 
   // Sync report to JIRA
   const syncToJira = async (report: TestReport) => {
@@ -353,16 +427,34 @@ export default function VaultIntegration() {
                             </button>
                           )
                         )}
-                        {report.vaultUrl && (
+                        {/* Save to Vault / View in Vault button */}
+                        {vaultStatus[report.id]?.saved ? (
                           <a
-                            href={report.vaultUrl}
+                            href={vaultStatus[report.id].viewUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition"
+                            className="flex items-center space-x-1 px-2 py-1 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded text-xs font-medium"
                           >
-                            <Eye className="h-4 w-4 text-gray-600 dark:text-gray-400" />
+                            <Eye className="h-3 w-3" />
+                            <span>View in Vault</span>
                           </a>
+                        ) : (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              saveToVault(report);
+                            }}
+                            disabled={vaultStatus[report.id]?.saving}
+                            className="flex items-center space-x-1 px-2 py-1 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 rounded text-xs font-medium transition disabled:opacity-50"
+                          >
+                            {vaultStatus[report.id]?.saving ? (
+                              <RefreshCw className="h-3 w-3 animate-spin" />
+                            ) : (
+                              <Upload className="h-3 w-3" />
+                            )}
+                            <span>{vaultStatus[report.id]?.saving ? 'Saving...' : 'Save to Vault'}</span>
+                          </button>
                         )}
                         <button
                           onClick={(e) => {
