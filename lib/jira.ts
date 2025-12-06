@@ -105,9 +105,10 @@ class JiraClient {
 
   /**
    * Search for issues using JQL
+   * Updated to use /search/jql endpoint (old /search is deprecated)
    */
   async searchIssues(jql: string, maxResults: number = 100): Promise<JiraIssue[]> {
-    const data = await this.fetch('/search', {
+    const data = await this.fetch('/search/jql', {
       method: 'POST',
       body: JSON.stringify({
         jql,
@@ -295,6 +296,135 @@ class JiraClient {
     if (summary.toLowerCase().includes('login') || summary.toLowerCase().includes('logout') || summary.toLowerCase().includes('auth')) return 'Login/Logout';
     if (summary.toLowerCase().includes('profile') || summary.toLowerCase().includes('address') || summary.toLowerCase().includes('email') || summary.toLowerCase().includes('phone')) return 'Profile';
     return 'General';
+  }
+
+  /**
+   * Add a comment to a JIRA issue
+   */
+  async addComment(issueKey: string, comment: string): Promise<void> {
+    await this.fetch(`/issue/${issueKey}/comment`, {
+      method: 'POST',
+      body: JSON.stringify({
+        body: {
+          type: 'doc',
+          version: 1,
+          content: [{
+            type: 'paragraph',
+            content: [{ type: 'text', text: comment }]
+          }]
+        }
+      })
+    });
+  }
+
+  /**
+   * Add a formatted test report comment to a JIRA issue
+   */
+  async addTestReportComment(issueKey: string, report: {
+    status: 'passed' | 'failed' | 'partial';
+    coverage: number;
+    testsPassed: number;
+    testsFailed: number;
+    testCases: Array<{ name: string; passed: boolean }>;
+    reportId: string;
+    generatedAt: string;
+  }): Promise<void> {
+    const statusEmoji = report.status === 'passed' ? '✅' : report.status === 'failed' ? '❌' : '⚠️';
+    const statusText = report.status.toUpperCase();
+
+    // Build test cases list (max 10 shown)
+    const testCasesList = report.testCases
+      .slice(0, 10)
+      .map(tc => `• ${tc.name} ${tc.passed ? '✓' : '✗'}`)
+      .join('\n');
+
+    const moreTests = report.testCases.length > 10
+      ? `\n... and ${report.testCases.length - 10} more tests`
+      : '';
+
+    const comment = `════════════════════════════════════
+🧪 Core APEX Test Report
+════════════════════════════════════
+Status: ${statusEmoji} ${statusText}
+Coverage: ${report.coverage}%
+Tests: ${report.testsPassed} passed, ${report.testsFailed} failed
+Generated: ${report.generatedAt}
+
+Test Cases:
+${testCasesList}${moreTests}
+
+📋 Full Report: https://corevault.progrediai.com/report/${report.reportId}
+════════════════════════════════════`;
+
+    await this.addComment(issueKey, comment);
+  }
+
+  /**
+   * Update labels on an issue (add test status label)
+   */
+  async updateLabels(issueKey: string, labelsToAdd: string[], labelsToRemove: string[] = []): Promise<void> {
+    const update: any = {};
+
+    if (labelsToAdd.length > 0) {
+      update.labels = labelsToAdd.map(label => ({ add: label }));
+    }
+
+    if (labelsToRemove.length > 0) {
+      update.labels = [
+        ...(update.labels || []),
+        ...labelsToRemove.map(label => ({ remove: label }))
+      ];
+    }
+
+    await this.fetch(`/issue/${issueKey}`, {
+      method: 'PUT',
+      body: JSON.stringify({ update })
+    });
+  }
+
+  /**
+   * Sync a test report to JIRA - adds comment and updates labels
+   */
+  async syncTestReport(issueKey: string, report: {
+    status: 'passed' | 'failed' | 'partial';
+    coverage: number;
+    testsPassed: number;
+    testsFailed: number;
+    testCases: Array<{ name: string; passed: boolean }>;
+    reportId: string;
+    generatedAt: string;
+  }): Promise<{ success: boolean; message: string }> {
+    try {
+      // Add the test report comment
+      await this.addTestReportComment(issueKey, report);
+
+      // Update labels based on test status
+      const statusLabel = `test-${report.status}`;
+      const labelsToRemove = ['test-passed', 'test-failed', 'test-partial'].filter(l => l !== statusLabel);
+
+      await this.updateLabels(issueKey, [statusLabel, 'apex-tested'], labelsToRemove);
+
+      return {
+        success: true,
+        message: `Test report synced to ${issueKey}`
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : 'Failed to sync test report'
+      };
+    }
+  }
+
+  /**
+   * Find JIRA issue by requirement ID (e.g., UC1-FR1)
+   */
+  async findIssueByRequirementId(requirementId: string, projectKey: string = 'SCRUM'): Promise<JiraIssue | null> {
+    const issues = await this.searchIssues(
+      `project = ${projectKey} AND summary ~ "${requirementId}" ORDER BY created DESC`,
+      1
+    );
+    return issues.length > 0 ? issues[0] : null;
   }
 }
 

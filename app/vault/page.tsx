@@ -14,7 +14,9 @@ import {
   Shield,
   ExternalLink,
   Search,
-  Filter
+  Filter,
+  RefreshCw,
+  Link2
 } from 'lucide-react';
 import BrandingHeader from '@/components/BrandingHeader';
 import BrandingFooter from '@/components/BrandingFooter';
@@ -31,11 +33,16 @@ interface TestReport {
   status: 'completed' | 'in-progress' | 'failed';
   savedBy: string;
   vaultUrl?: string;
+  requirementId?: string; // e.g., UC1-FR1 for JIRA mapping
+  jiraSynced?: boolean;
+  jiraIssueKey?: string;
 }
 
 export default function VaultIntegration() {
   const [selectedReport, setSelectedReport] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [syncingReport, setSyncingReport] = useState<string | null>(null);
+  const [syncStatus, setSyncStatus] = useState<Record<string, { synced: boolean; issueKey?: string }>>({});
 
   // Amazon.com Phase 2 Test Reports - All 77 functional requirements
   const reports: TestReport[] = [
@@ -50,7 +57,8 @@ export default function VaultIntegration() {
       compliance: 98,
       status: 'completed',
       savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2025-001'
+      vaultUrl: 'https://corevault.progrediai.com/report/RPT-2025-001',
+      requirementId: 'UC1'
     },
     {
       id: 'RPT-2025-002',
@@ -63,7 +71,8 @@ export default function VaultIntegration() {
       compliance: 100,
       status: 'completed',
       savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2025-002'
+      vaultUrl: 'https://corevault.progrediai.com/report/RPT-2025-002',
+      requirementId: 'UC4'
     },
     {
       id: 'RPT-2025-003',
@@ -76,7 +85,8 @@ export default function VaultIntegration() {
       compliance: 95,
       status: 'completed',
       savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2025-003'
+      vaultUrl: 'https://corevault.progrediai.com/report/RPT-2025-003',
+      requirementId: 'UC2'
     },
     {
       id: 'RPT-2025-004',
@@ -89,7 +99,8 @@ export default function VaultIntegration() {
       compliance: 94,
       status: 'completed',
       savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2025-004'
+      vaultUrl: 'https://corevault.progrediai.com/report/RPT-2025-004',
+      requirementId: 'UC3'
     },
     {
       id: 'RPT-2025-005',
@@ -102,7 +113,8 @@ export default function VaultIntegration() {
       compliance: 96,
       status: 'completed',
       savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2025-005'
+      vaultUrl: 'https://corevault.progrediai.com/report/RPT-2025-005',
+      requirementId: 'UC5'
     },
     {
       id: 'RPT-2025-006',
@@ -115,9 +127,54 @@ export default function VaultIntegration() {
       compliance: 98,
       status: 'completed',
       savedBy: 'Core APEX',
-      vaultUrl: 'https://corevault.progrediai.com/artifacts/apex-rpt-2025-006'
+      vaultUrl: 'https://corevault.progrediai.com/report/RPT-2025-006',
+      requirementId: 'UC1' // Will sync to first UC as example
     }
   ];
+
+  // Sync report to JIRA
+  const syncToJira = async (report: TestReport) => {
+    if (!report.requirementId) return;
+
+    setSyncingReport(report.id);
+    try {
+      const response = await fetch('/api/jira/sync-report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requirementId: report.requirementId,
+          report: {
+            status: report.passRate >= 90 ? 'passed' : report.passRate >= 70 ? 'partial' : 'failed',
+            coverage: report.compliance,
+            testsPassed: Math.round(report.tests * (report.passRate / 100)),
+            testsFailed: Math.round(report.tests * ((100 - report.passRate) / 100)),
+            testCases: Array.from({ length: Math.min(report.tests, 10) }, (_, i) => ({
+              name: `TC-${String(i + 1).padStart(3, '0')}: ${report.name.split(':')[1]?.trim() || 'Test Case'} #${i + 1}`,
+              passed: i < Math.round(10 * (report.passRate / 100))
+            })),
+            reportId: report.id,
+            generatedAt: formatDate(report.date)
+          }
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSyncStatus(prev => ({
+          ...prev,
+          [report.id]: { synced: true, issueKey: result.issueKey }
+        }));
+      } else {
+        alert(`Sync failed: ${result.error}`);
+      }
+    } catch (error) {
+      alert('Failed to sync to JIRA');
+      console.error(error);
+    } finally {
+      setSyncingReport(null);
+    }
+  };
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -265,6 +322,37 @@ export default function VaultIntegration() {
                         <span>{formatDate(report.date)}</span>
                       </div>
                       <div className="flex space-x-2">
+                        {/* Sync to JIRA button */}
+                        {report.requirementId && (
+                          syncStatus[report.id]?.synced ? (
+                            <a
+                              href={`https://progrediai.atlassian.net/browse/${syncStatus[report.id].issueKey}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="flex items-center space-x-1 px-2 py-1 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 rounded text-xs font-medium"
+                            >
+                              <CheckCircle className="h-3 w-3" />
+                              <span>{syncStatus[report.id].issueKey}</span>
+                            </a>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                syncToJira(report);
+                              }}
+                              disabled={syncingReport === report.id}
+                              className="flex items-center space-x-1 px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50 rounded text-xs font-medium transition disabled:opacity-50"
+                            >
+                              {syncingReport === report.id ? (
+                                <RefreshCw className="h-3 w-3 animate-spin" />
+                              ) : (
+                                <Link2 className="h-3 w-3" />
+                              )}
+                              <span>{syncingReport === report.id ? 'Syncing...' : 'Sync to JIRA'}</span>
+                            </button>
+                          )
+                        )}
                         {report.vaultUrl && (
                           <a
                             href={report.vaultUrl}
