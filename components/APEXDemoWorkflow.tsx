@@ -785,35 +785,35 @@ export default function APEXDemoWorkflow() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8">
+    <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 lg:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-            Core APEX Live Demo Workflow
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
+            Core APEX Live Demo
           </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            Watch as AI agents transform requirements into executed tests with human oversight
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+            AI agents transform requirements into executed tests
           </p>
         </div>
         <button
           onClick={runWorkflow}
           disabled={isRunning}
-          className={`px-6 py-3 rounded-lg font-medium transition flex items-center space-x-2 ${
+          className={`w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg font-medium transition flex items-center justify-center space-x-2 touch-target tap-highlight-none ${
             isRunning
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-indigo-600 text-white hover:bg-indigo-700'
+              : 'bg-indigo-600 text-white hover:bg-indigo-700 active:bg-indigo-800'
           }`}
         >
           {isRunning ? (
             <>
-              <Loader2 className="h-5 w-5 animate-spin" />
-              <span>Running Workflow...</span>
+              <Loader2 className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" />
+              <span className="text-sm sm:text-base">Running...</span>
             </>
           ) : (
             <>
-              <Zap className="h-5 w-5" />
-              <span>Start Demo Workflow</span>
+              <Zap className="h-4 w-4 sm:h-5 sm:w-5" />
+              <span className="text-sm sm:text-base">Start Demo</span>
             </>
           )}
         </button>
@@ -859,7 +859,7 @@ export default function APEXDemoWorkflow() {
           </div>
 
           {/* Use Case Summary Cards */}
-          <div className="grid grid-cols-5 gap-2 mb-3">
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mb-3">
             {[
               { name: 'Add to Cart', count: jiraRequirements.filter(r => r.useCase === 'Add to Cart').length, color: 'bg-green-100 text-green-800 border-green-300' },
               { name: 'Wishlist', count: jiraRequirements.filter(r => r.useCase === 'Wishlist').length, color: 'bg-purple-100 text-purple-800 border-purple-300' },
@@ -867,9 +867,9 @@ export default function APEXDemoWorkflow() {
               { name: 'Login/Logout', count: jiraRequirements.filter(r => r.useCase === 'Login/Logout').length, color: 'bg-orange-100 text-orange-800 border-orange-300' },
               { name: 'Profile', count: jiraRequirements.filter(r => r.useCase === 'Profile').length, color: 'bg-pink-100 text-pink-800 border-pink-300' }
             ].map(uc => (
-              <div key={uc.name} className={`${uc.color} border rounded p-2 text-center`}>
-                <div className="text-lg font-bold">{uc.count}</div>
-                <div className="text-xs truncate">{uc.name}</div>
+              <div key={uc.name} className={`${uc.color} border rounded p-1.5 sm:p-2 text-center`}>
+                <div className="text-base sm:text-lg font-bold">{uc.count}</div>
+                <div className="text-[10px] sm:text-xs truncate">{uc.name}</div>
               </div>
             ))}
           </div>
@@ -1255,7 +1255,7 @@ export default function APEXDemoWorkflow() {
                           <span>AI Test Generation Process</span>
                         </h5>
                         <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
-                          Powered by Claude AI
+                          Powered by Progredi AI
                         </span>
                       </div>
 
@@ -1318,18 +1318,18 @@ export default function APEXDemoWorkflow() {
                             <Settings2 className="h-4 w-4 text-purple-600" />
                             <span className="text-xs font-semibold text-purple-700 dark:text-purple-300">AI Analysis</span>
                           </div>
-                          <div className="grid grid-cols-4 gap-3 text-xs">
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 text-xs">
                             <div>
                               <span className="text-gray-500 block">Test Types</span>
-                              <span className="font-medium text-gray-800 dark:text-gray-200">Happy Path, Edge Cases, Boundary</span>
+                              <span className="font-medium text-gray-800 dark:text-gray-200">Happy Path, Edge, Boundary</span>
                             </div>
                             <div>
                               <span className="text-gray-500 block">Assertions</span>
-                              <span className="font-medium text-gray-800 dark:text-gray-200">Cart state, UI feedback, DB sync</span>
+                              <span className="font-medium text-gray-800 dark:text-gray-200">Cart, UI, DB sync</span>
                             </div>
                             <div>
                               <span className="text-gray-500 block">Dependencies</span>
-                              <span className="font-medium text-gray-800 dark:text-gray-200">Auth session, Cart API</span>
+                              <span className="font-medium text-gray-800 dark:text-gray-200">Auth, Cart API</span>
                             </div>
                             <div>
                               <span className="text-gray-500 block">Priority</span>
@@ -1339,38 +1339,38 @@ export default function APEXDemoWorkflow() {
                         </div>
 
                         {/* Generation Stats */}
-                        <div className="mt-3 flex items-center justify-between text-xs text-gray-600 dark:text-gray-400">
-                          <div className="flex items-center space-x-4">
+                        <div className="mt-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-gray-600 dark:text-gray-400">
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
                             <span className="flex items-center space-x-1">
                               <FileText className="h-3 w-3" />
-                              <span>77 requirements analyzed</span>
+                              <span>77 reqs</span>
                             </span>
                             <span className="flex items-center space-x-1">
                               <Code className="h-3 w-3" />
-                              <span>127 tests generated</span>
+                              <span>127 tests</span>
                             </span>
                             <span className="flex items-center space-x-1">
                               <TrendingUp className="h-3 w-3" />
-                              <span>95% coverage achieved</span>
+                              <span>95% coverage</span>
                             </span>
                           </div>
-                          <span className="text-purple-600 font-medium">Avg 2.5 tests per requirement</span>
+                          <span className="text-purple-600 font-medium">Avg 2.5 tests/req</span>
                         </div>
                       </div>
 
                       {/* Use Case Breakdown */}
-                      <div className="mt-3 grid grid-cols-5 gap-2">
+                      <div className="mt-3 grid grid-cols-3 sm:grid-cols-5 gap-2">
                         {[
-                          { uc: 'UC1', name: 'Add to Cart', reqs: 13, tests: 32, color: 'bg-green-100 text-green-800 border-green-200' },
+                          { uc: 'UC1', name: 'Cart', reqs: 13, tests: 32, color: 'bg-green-100 text-green-800 border-green-200' },
                           { uc: 'UC2', name: 'Wishlist', reqs: 12, tests: 30, color: 'bg-purple-100 text-purple-800 border-purple-200' },
                           { uc: 'UC3', name: 'Filters', reqs: 13, tests: 28, color: 'bg-blue-100 text-blue-800 border-blue-200' },
                           { uc: 'UC4', name: 'Login', reqs: 18, tests: 22, color: 'bg-orange-100 text-orange-800 border-orange-200' },
                           { uc: 'UC5', name: 'Profile', reqs: 21, tests: 15, color: 'bg-pink-100 text-pink-800 border-pink-200' }
                         ].map(item => (
-                          <div key={item.uc} className={`${item.color} border rounded-lg p-2 text-center`}>
-                            <div className="font-bold text-sm">{item.uc}</div>
-                            <div className="text-xs opacity-80">{item.name}</div>
-                            <div className="text-xs mt-1 font-medium">{item.reqs} reqs → {item.tests} tests</div>
+                          <div key={item.uc} className={`${item.color} border rounded-lg p-1.5 sm:p-2 text-center`}>
+                            <div className="font-bold text-xs sm:text-sm">{item.uc}</div>
+                            <div className="text-[10px] sm:text-xs opacity-80 truncate">{item.name}</div>
+                            <div className="text-[10px] sm:text-xs mt-0.5 sm:mt-1 font-medium">{item.reqs}→{item.tests}</div>
                           </div>
                         ))}
                       </div>
@@ -1554,7 +1554,7 @@ export default function APEXDemoWorkflow() {
                           {complianceResults.section508.checks.length + complianceResults.fips.checks.length + complianceResults.stig.checks.length} checks across 3 frameworks
                         </span>
                       </div>
-                      <div className="grid md:grid-cols-3 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                         {/* Section 508 */}
                         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-600 overflow-hidden">
                           <div className="bg-blue-50 dark:bg-blue-900/30 px-3 py-2 border-b border-gray-200 dark:border-gray-600">
@@ -1659,64 +1659,64 @@ export default function APEXDemoWorkflow() {
             Demo Results & Impact
           </h3>
 
-          <div className="grid md:grid-cols-5 gap-6">
-            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <FileText className="h-5 w-5 text-blue-600" />
-                <span className="text-xs text-blue-600 font-medium">Requirements</span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-3 sm:p-4">
+              <div className="flex items-center justify-between mb-1 sm:mb-2">
+                <FileText className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
+                <span className="text-[10px] sm:text-xs text-blue-600 font-medium">Reqs</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                 {metrics.requirements_parsed}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">From 5 Use Cases</div>
+              <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">5 Use Cases</div>
             </div>
 
-            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <Code className="h-5 w-5 text-green-600" />
-                <span className="text-xs text-green-600 font-medium">Tests</span>
+            <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-3 sm:p-4">
+              <div className="flex items-center justify-between mb-1 sm:mb-2">
+                <Code className="h-4 w-4 sm:h-5 sm:w-5 text-green-600" />
+                <span className="text-[10px] sm:text-xs text-green-600 font-medium">Tests</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                 {metrics.tests_generated}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">Auto-generated</div>
+              <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">Generated</div>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <TrendingUp className="h-5 w-5 text-purple-600" />
-                <span className="text-xs text-purple-600 font-medium">Pass Rate</span>
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-3 sm:p-4">
+              <div className="flex items-center justify-between mb-1 sm:mb-2">
+                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-purple-600" />
+                <span className="text-[10px] sm:text-xs text-purple-600 font-medium">Pass</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                 {metrics.tests_executed > 0
                   ? Math.round((metrics.tests_passed / metrics.tests_executed) * 100)
                   : 0}%
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                {metrics.tests_passed}/{metrics.tests_executed} passed
+              <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">
+                {metrics.tests_passed}/{metrics.tests_executed}
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <Shield className="h-5 w-5 text-orange-600" />
-                <span className="text-xs text-orange-600 font-medium">Compliance</span>
+            <div className="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-lg p-3 sm:p-4">
+              <div className="flex items-center justify-between mb-1 sm:mb-2">
+                <Shield className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600" />
+                <span className="text-[10px] sm:text-xs text-orange-600 font-medium">Comply</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                 {metrics.compliance_score}%
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">DoD Standards</div>
+              <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">DoD</div>
             </div>
 
-            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <Clock className="h-5 w-5 text-indigo-600" />
-                <span className="text-xs text-indigo-600 font-medium">Time Saved</span>
+            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-800/20 rounded-lg p-3 sm:p-4 col-span-2 sm:col-span-1">
+              <div className="flex items-center justify-between mb-1 sm:mb-2">
+                <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600" />
+                <span className="text-[10px] sm:text-xs text-indigo-600 font-medium">Saved</span>
               </div>
-              <div className="text-2xl font-bold text-gray-900 dark:text-white">
+              <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
                 {metrics.time_saved}h
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">vs Manual</div>
+              <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">vs Manual</div>
             </div>
           </div>
 

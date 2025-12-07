@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
       test_cases,
       environment,
       parallel_execution = true,
-      max_parallel_tests = 5,
+      max_parallel_tests = 50,
       ci_cd_integration
     } = body;
 
@@ -175,8 +175,8 @@ async function executeTestCase(testCase: any, environment: string): Promise<Test
     }
   };
 
-  // Simulate test execution with realistic timing
-  await new Promise(resolve => setTimeout(resolve, Math.random() * 3000 + 1000));
+  // Minimal delay for demo - just enough to show execution happening
+  await new Promise(resolve => setTimeout(resolve, 5));
 
   // Add execution logs
   const testName = testCase.name || testCase.id || 'Unknown Test';
@@ -190,8 +190,8 @@ async function executeTestCase(testCase: any, environment: string): Promise<Test
   // Simulate test steps (use 3 steps if not provided)
   const stepCount = testCase.steps?.length || 3;
   for (let i = 0; i < stepCount; i++) {
-    // Minimal delay for demo performance
-    await new Promise(resolve => setTimeout(resolve, 50));
+    // Minimal delay for demo - just enough to show step progress
+    await new Promise(resolve => setTimeout(resolve, 2));
 
     execution.logs.push({
       timestamp: new Date().toISOString(),
