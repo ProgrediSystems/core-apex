@@ -129,34 +129,36 @@ export default function CoreAPEXPage() {
 
       {/* Quick Actions Bar */}
       <div className="bg-indigo-50 dark:bg-indigo-900/20 border-b border-indigo-200 dark:border-indigo-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-indigo-700 dark:text-indigo-300">
-              Navy-AIAT Phase 2 MVP • Transforming Navy Testing with AI
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs sm:text-sm text-indigo-700 dark:text-indigo-300 truncate">
+              <span className="hidden sm:inline">Navy-AIAT Phase 2 MVP • </span>
+              <span>Transforming Navy Testing with AI</span>
             </span>
             <button
               onClick={runDemo}
-              className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center space-x-2"
+              className="flex-shrink-0 px-3 sm:px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 active:bg-indigo-800 transition flex items-center space-x-1 sm:space-x-2 text-sm touch-target tap-highlight-none"
             >
               <Zap className="h-4 w-4" />
-              <span>Run Demo</span>
+              <span className="hidden xs:inline">Run Demo</span>
+              <span className="xs:hidden">Demo</span>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Navigation Tabs */}
+      {/* Navigation Tabs - Horizontally scrollable on mobile */}
       <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8">
+        <div className="max-w-7xl mx-auto px-0 sm:px-6 lg:px-8">
+          <div className="flex overflow-x-auto scrollbar-hide px-4 sm:px-0 -mx-0 sm:mx-0">
             {['overview', 'agents', 'demo', 'metrics', 'vault'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab as any)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm capitalize transition ${
+                className={`py-3 sm:py-4 px-3 sm:px-4 border-b-2 font-medium text-sm capitalize transition whitespace-nowrap flex-shrink-0 touch-target tap-highlight-none ${
                   activeTab === tab
                     ? 'border-indigo-600 text-indigo-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 active:text-gray-800'
                 }`}
               >
                 {tab}
@@ -167,40 +169,40 @@ export default function CoreAPEXPage() {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      <main className="flex-1 max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 w-full">
         {activeTab === 'overview' && (
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-8">
             {/* Value Proposition */}
-            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 sm:p-8">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
                 Transform Navy Testing with AI-Powered Automation
               </h2>
-              <p className="text-gray-600 dark:text-gray-300 mb-6">
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4 sm:mb-6">
                 Core APEX solves PEO MLB's critical testing bottleneck by automating the entire test lifecycle.
                 Teams currently spend 60-70% of their time writing test scripts - we reduce that to minutes.
               </p>
 
               <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">Projected Phase 2 Targets</p>
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-6">
-                  <div className="text-3xl font-bold text-green-600 mb-2">90%</div>
-                  <div className="text-sm text-gray-700 dark:text-gray-300">Target reduction in test development time</div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-6">
+                <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-lg p-4 sm:p-6">
+                  <div className="text-2xl sm:text-3xl font-bold text-green-600 mb-1 sm:mb-2">90%</div>
+                  <div className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">Target reduction in test development time</div>
                 </div>
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-6">
-                  <div className="text-3xl font-bold text-blue-600 mb-2">75%</div>
-                  <div className="text-sm text-gray-700 dark:text-gray-300">Goal for predictive defect detection</div>
+                <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4 sm:p-6">
+                  <div className="text-2xl sm:text-3xl font-bold text-blue-600 mb-1 sm:mb-2">75%</div>
+                  <div className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">Goal for predictive defect detection</div>
                 </div>
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-6">
-                  <div className="text-3xl font-bold text-purple-600 mb-2">$2M+</div>
-                  <div className="text-sm text-gray-700 dark:text-gray-300">Projected annual cost savings</div>
+                <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-lg p-4 sm:p-6">
+                  <div className="text-2xl sm:text-3xl font-bold text-purple-600 mb-1 sm:mb-2">$2M+</div>
+                  <div className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">Projected annual cost savings</div>
                 </div>
               </div>
             </div>
 
             {/* Key Features */}
-            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Key Capabilities</h3>
-              <div className="grid md:grid-cols-2 gap-6">
+            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 sm:p-8">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Key Capabilities</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 <div className="flex items-start space-x-3">
                   <CheckCircle className="h-6 w-6 text-green-500 flex-shrink-0 mt-0.5" />
                   <div>
@@ -243,16 +245,16 @@ export default function CoreAPEXPage() {
         )}
 
         {activeTab === 'agents' && (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {agents.map((agent) => (
               <div
                 key={agent.id}
                 onClick={() => setSelectedAgent(agent)}
-                className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-6 cursor-pointer hover:shadow-xl transition transform hover:-translate-y-1"
+                className="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-4 sm:p-6 cursor-pointer hover:shadow-xl active:shadow-lg transition transform hover:-translate-y-1 active:translate-y-0 tap-highlight-none"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-                    <agent.icon className="h-6 w-6 text-indigo-600" />
+                <div className="flex items-start justify-between mb-3 sm:mb-4">
+                  <div className="p-2 sm:p-3 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
+                    <agent.icon className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600" />
                   </div>
                   <div className={`px-2 py-1 rounded-full text-xs font-medium ${
                     agent.status === 'success' ? 'bg-green-100 text-green-700' :
@@ -263,16 +265,16 @@ export default function CoreAPEXPage() {
                     {agent.status}
                   </div>
                 </div>
-                <h3 className="font-bold text-gray-900 dark:text-white mb-2">{agent.name}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{agent.description}</p>
-                <div className="flex flex-wrap gap-2">
+                <h3 className="font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 text-sm sm:text-base">{agent.name}</h3>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3 sm:mb-4 line-clamp-2">{agent.description}</p>
+                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                   {agent.capabilities.slice(0, 2).map((cap) => (
-                    <span key={cap} className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full">
+                    <span key={cap} className="text-xs px-2 py-0.5 sm:py-1 bg-gray-100 dark:bg-gray-800 rounded-full">
                       {cap}
                     </span>
                   ))}
                   {agent.capabilities.length > 2 && (
-                    <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-full">
+                    <span className="text-xs px-2 py-0.5 sm:py-1 bg-gray-100 dark:bg-gray-800 rounded-full">
                       +{agent.capabilities.length - 2}
                     </span>
                   )}

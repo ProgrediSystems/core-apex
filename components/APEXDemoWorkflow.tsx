@@ -928,44 +928,51 @@ export default function APEXDemoWorkflow() {
 
       {/* Human-in-the-Loop Notification */}
       {showHumanReview && (
-        <div className="mb-6 p-5 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-2 border-orange-400 rounded-xl shadow-lg">
-          <div className="flex items-start space-x-4">
-            <div className="p-2 bg-orange-100 dark:bg-orange-800/30 rounded-lg">
-              <UserCheck className="h-7 w-7 text-orange-600" />
+        <div className="mb-4 sm:mb-6 p-3 sm:p-5 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-2 border-orange-400 rounded-xl shadow-lg">
+          <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
+            <div className="flex items-center sm:block">
+              <div className="p-2 bg-orange-100 dark:bg-orange-800/30 rounded-lg">
+                <UserCheck className="h-5 w-5 sm:h-7 sm:w-7 text-orange-600" />
+              </div>
+              {regenerateCount > 0 && (
+                <span className="ml-2 sm:hidden text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                  Iteration #{regenerateCount + 1}
+                </span>
+              )}
             </div>
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="font-bold text-lg text-gray-900 dark:text-white">
+                <h4 className="font-bold text-base sm:text-lg text-gray-900 dark:text-white">
                   Human Review Required
                 </h4>
                 {regenerateCount > 0 && (
-                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                  <span className="hidden sm:inline text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
                     Iteration #{regenerateCount + 1}
                   </span>
                 )}
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Review the AI-generated test cases below. You can approve them to continue, request regeneration with feedback, or edit individual test cases.
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-3 sm:mb-4">
+                Review the AI-generated test cases below. Approve, regenerate, or edit individual tests.
               </p>
 
-              {/* Quick Stats */}
-              <div className="flex items-center space-x-4 mb-4 text-sm">
-                <div className="flex items-center space-x-1 text-green-600">
-                  <ThumbsUp className="h-4 w-4" />
+              {/* Quick Stats - Scrollable on mobile */}
+              <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-4 text-xs sm:text-sm overflow-x-auto pb-1 scrollbar-hide">
+                <div className="flex items-center space-x-1 text-green-600 whitespace-nowrap">
+                  <ThumbsUp className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span>{generatedTestCases.filter(tc => tc.status === 'passed').length} ready</span>
                 </div>
-                <div className="flex items-center space-x-1 text-red-600">
-                  <ThumbsDown className="h-4 w-4" />
+                <div className="flex items-center space-x-1 text-red-600 whitespace-nowrap">
+                  <ThumbsDown className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   <span>{generatedTestCases.filter(tc => tc.status === 'failed').length} needs review</span>
                 </div>
-                <div className="flex items-center space-x-1 text-gray-500">
-                  <MessageSquare className="h-4 w-4" />
-                  <span>{Object.keys(testCaseNotes).length} notes added</span>
+                <div className="flex items-center space-x-1 text-gray-500 whitespace-nowrap">
+                  <MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                  <span>{Object.keys(testCaseNotes).length} notes</span>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3">
+              {/* Action Buttons - Stack on mobile */}
+              <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3">
                 <button
                   onClick={() => {
                     setShowHumanReview(false);
@@ -978,47 +985,52 @@ export default function APEXDemoWorkflow() {
                       humanApprovalResolverRef.current = null;
                     }
                   }}
-                  className="flex items-center space-x-2 px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium shadow-md"
+                  className="flex items-center justify-center space-x-2 px-4 sm:px-5 py-2.5 sm:py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 active:bg-green-800 transition font-medium shadow-md touch-target tap-highlight-none"
                 >
                   <CheckCircle className="h-4 w-4" />
                   <span>Approve & Continue</span>
                 </button>
 
-                <button
-                  onClick={async () => {
-                    setIsRegenerating(true);
-                    // Simulate regeneration with slight delay
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    setRegenerateCount(prev => prev + 1);
-                    setIsRegenerating(false);
-                  }}
-                  disabled={isRegenerating}
-                  className="flex items-center space-x-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isRegenerating ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                      <span>Regenerating...</span>
-                    </>
-                  ) : (
-                    <>
-                      <RotateCcw className="h-4 w-4" />
-                      <span>Regenerate Tests</span>
-                    </>
-                  )}
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={async () => {
+                      setIsRegenerating(true);
+                      // Simulate regeneration with slight delay
+                      await new Promise(resolve => setTimeout(resolve, 2000));
+                      setRegenerateCount(prev => prev + 1);
+                      setIsRegenerating(false);
+                    }}
+                    disabled={isRegenerating}
+                    className="flex-1 sm:flex-none flex items-center justify-center space-x-2 px-3 sm:px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed touch-target tap-highlight-none"
+                  >
+                    {isRegenerating ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span className="hidden sm:inline">Regenerating...</span>
+                        <span className="sm:hidden">...</span>
+                      </>
+                    ) : (
+                      <>
+                        <RotateCcw className="h-4 w-4" />
+                        <span className="hidden sm:inline">Regenerate Tests</span>
+                        <span className="sm:hidden">Regenerate</span>
+                      </>
+                    )}
+                  </button>
 
-                <button
-                  onClick={() => setEditingTestCase(editingTestCase ? null : 'all')}
-                  className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg transition font-medium ${
-                    editingTestCase
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  <Edit2 className="h-4 w-4" />
-                  <span>{editingTestCase ? 'Done Editing' : 'Edit Test Cases'}</span>
-                </button>
+                  <button
+                    onClick={() => setEditingTestCase(editingTestCase ? null : 'all')}
+                    className={`flex-1 sm:flex-none flex items-center justify-center space-x-2 px-3 sm:px-4 py-2.5 rounded-lg transition font-medium touch-target tap-highlight-none ${
+                      editingTestCase
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600 active:bg-gray-400'
+                    }`}
+                  >
+                    <Edit2 className="h-4 w-4" />
+                    <span className="hidden sm:inline">{editingTestCase ? 'Done Editing' : 'Edit Test Cases'}</span>
+                    <span className="sm:hidden">{editingTestCase ? 'Done' : 'Edit'}</span>
+                  </button>
+                </div>
 
                 <button
                   onClick={() => {
@@ -1026,7 +1038,7 @@ export default function APEXDemoWorkflow() {
                     setHumanReviewStep(null);
                     // Skip without resolving - workflow will timeout/fail gracefully
                   }}
-                  className="flex items-center space-x-2 px-4 py-2.5 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition"
+                  className="flex items-center justify-center space-x-2 px-3 sm:px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 active:text-gray-900 transition tap-highlight-none"
                 >
                   <XCircle className="h-4 w-4" />
                   <span>Reject & Cancel</span>
@@ -1037,10 +1049,10 @@ export default function APEXDemoWorkflow() {
 
           {/* Feedback Input for Regeneration */}
           {isRegenerating && (
-            <div className="mt-4 pt-4 border-t border-orange-200 dark:border-orange-700">
-              <div className="flex items-center space-x-2 text-sm text-orange-700 dark:text-orange-300">
+            <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-orange-200 dark:border-orange-700">
+              <div className="flex items-center space-x-2 text-xs sm:text-sm text-orange-700 dark:text-orange-300">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                <span>AI is regenerating test cases with your feedback...</span>
+                <span>AI is regenerating test cases...</span>
               </div>
             </div>
           )}
@@ -1048,7 +1060,7 @@ export default function APEXDemoWorkflow() {
       )}
 
       {/* Workflow Steps */}
-      <div className="space-y-4 mb-8">
+      <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
         {workflowSteps.map((step, index) => {
           const Icon = getStepIcon(step.agent);
           const StatusIcon = getStatusIcon(step.status);
@@ -1057,7 +1069,7 @@ export default function APEXDemoWorkflow() {
           return (
             <div
               key={step.id}
-              className={`border rounded-lg p-4 transition ${
+              className={`border rounded-lg p-3 sm:p-4 transition ${
                 step.status === 'running'
                   ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
                   : step.status === 'complete'
@@ -1067,45 +1079,45 @@ export default function APEXDemoWorkflow() {
                   : 'border-gray-200 dark:border-gray-700'
               }`}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                  <div className="p-2 bg-white dark:bg-gray-800 rounded-lg">
-                    <Icon className="h-6 w-6 text-indigo-600" />
+              <div className="flex items-start sm:items-center justify-between gap-2">
+                <div className="flex items-start sm:items-center space-x-2 sm:space-x-4 min-w-0 flex-1">
+                  <div className="p-1.5 sm:p-2 bg-white dark:bg-gray-800 rounded-lg flex-shrink-0">
+                    <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-indigo-600" />
                   </div>
-                  <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
-                      <span>{step.name}</span>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="font-semibold text-sm sm:text-base text-gray-900 dark:text-white flex flex-wrap items-center gap-1 sm:gap-2">
+                      <span className="truncate">{step.name}</span>
                       {/* Show JIRA connection badge for Requirements step */}
                       {step.id === 'requirements' && jiraConnectionStatus === 'connected' && (
-                        <span className="flex items-center text-xs text-green-600 bg-green-100 px-2 py-0.5 rounded-full">
-                          <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1 animate-pulse"></span>
-                          JIRA Live
+                        <span className="flex-shrink-0 flex items-center text-[10px] sm:text-xs text-green-600 bg-green-100 px-1.5 sm:px-2 py-0.5 rounded-full">
+                          <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-green-500 rounded-full mr-0.5 sm:mr-1 animate-pulse"></span>
+                          <span className="hidden xs:inline">JIRA </span>Live
                         </span>
                       )}
                       {step.id === 'requirements' && jiraConnectionStatus === 'offline' && (
-                        <span className="flex items-center text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">
-                          <span className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-1"></span>
-                          Demo Mode
+                        <span className="flex-shrink-0 flex items-center text-[10px] sm:text-xs text-gray-500 bg-gray-100 px-1.5 sm:px-2 py-0.5 rounded-full">
+                          <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 bg-gray-400 rounded-full mr-0.5 sm:mr-1"></span>
+                          Demo
                         </span>
                       )}
                     </h4>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 truncate">
                       {step.agent}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
                   {step.requiresHumanReview && step.status !== 'error' && step.status !== 'pending' && (
-                    <span className="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded">
+                    <span className="hidden sm:inline text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded">
                       Human Review
                     </span>
                   )}
                   {step.duration && (
-                    <span className="text-sm text-gray-500">
+                    <span className="text-xs sm:text-sm text-gray-500">
                       {(step.duration / 1000).toFixed(1)}s
                     </span>
                   )}
-                  <StatusIcon className={`h-6 w-6 ${statusColor} ${
+                  <StatusIcon className={`h-5 w-5 sm:h-6 sm:w-6 ${statusColor} ${
                     step.status === 'running' ? 'animate-spin' : ''
                   }`} />
                 </div>

@@ -24,10 +24,88 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent text size adjustment on orientation change */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Smooth scrolling */
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Hide scrollbars but keep functionality */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Remove tap highlight on touch devices */
+  .tap-highlight-none {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Touch-friendly minimum tap targets */
+@layer components {
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
+
+  /* Mobile-optimized horizontal scroll container */
+  .mobile-scroll-x {
+    @apply overflow-x-auto -mx-4 px-4 scrollbar-hide;
+  }
+}
+
+/* Safe area insets for notched devices (iPhone X+) */
+@supports (padding: max(0px)) {
+  .safe-area-top {
+    padding-top: max(0.5rem, env(safe-area-inset-top));
+  }
+  .safe-area-bottom {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+  .safe-area-x {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* Mobile-friendly hover states - use active on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  .hover\:bg-indigo-700:active {
+    background-color: rgb(67 56 202);
+  }
+  .hover\:bg-green-700:active {
+    background-color: rgb(21 128 61);
+  }
+  .hover\:bg-blue-700:active {
+    background-color: rgb(29 78 216);
+  }
+  .hover\:bg-orange-700:active {
+    background-color: rgb(194 65 12);
+  }
+}
+
+/* Prevent pull-to-refresh on mobile */
+@media (max-width: 768px) {
+  body {
+    overscroll-behavior-y: contain;
   }
 }
