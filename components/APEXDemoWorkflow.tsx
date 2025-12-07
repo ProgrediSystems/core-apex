@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Play,
   CheckCircle,
@@ -68,6 +68,9 @@ export default function APEXDemoWorkflow() {
     fips: { status: string; checks: Array<{ name: string; status: string; details: string }> };
     stig: { status: string; checks: Array<{ name: string; status: string; details: string }> };
   } | null>(null);
+
+  // Ref to hold the human approval resolver - allows workflow to wait for user action
+  const humanApprovalResolverRef = useRef<(() => void) | null>(null);
 
   // Check JIRA connection on mount
   useEffect(() => {
@@ -406,19 +409,15 @@ export default function APEXDemoWorkflow() {
         coverage_percent: data.test_suite?.coverage?.percentage || 95
       }));
 
-      // Trigger human review
+      // Trigger human review - workflow PAUSES here until user approves
       setShowHumanReview(true);
       setHumanReviewStep(1);
-      setShowTestCases(true); // Show generated test cases
+      setShowTestCases(true); // Show generated test cases for review
 
-      // Wait for human to click approve (don't auto-hide)
-      await new Promise(resolve => {
-        const checkInterval = setInterval(() => {
-          if (!showHumanReview) {
-            clearInterval(checkInterval);
-            resolve(undefined);
-          }
-        }, 100);
+      // Wait for human to click "Approve & Continue" button
+      // The button's onClick will call the resolver stored in the ref
+      await new Promise<void>(resolve => {
+        humanApprovalResolverRef.current = resolve;
       });
 
       return data;
@@ -935,6 +934,11 @@ export default function APEXDemoWorkflow() {
               onClick={() => {
                 setShowHumanReview(false);
                 setHumanReviewStep(null);
+                // Resolve the pending promise to continue the workflow
+                if (humanApprovalResolverRef.current) {
+                  humanApprovalResolverRef.current();
+                  humanApprovalResolverRef.current = null;
+                }
               }}
               className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition text-sm font-medium"
             >
