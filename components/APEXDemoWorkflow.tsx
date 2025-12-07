@@ -352,7 +352,7 @@ export default function APEXDemoWorkflow() {
     setShowJiraRequirements(true);
 
     // Step 1: Requirements Agent
-    await runStep(0, async () => {
+    const step1Success = await runStep(0, async () => {
       const response = await fetch('/api/apex/requirements', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -365,6 +365,9 @@ export default function APEXDemoWorkflow() {
           }
         })
       });
+      if (!response.ok) {
+        throw new Error(`Requirements Agent failed: ${response.status} ${response.statusText}`);
+      }
       const data = await response.json();
 
       setMetrics(prev => ({
@@ -375,8 +378,13 @@ export default function APEXDemoWorkflow() {
       return data;
     });
 
+    if (!step1Success) {
+      setIsRunning(false);
+      return;
+    }
+
     // Step 2: Test Design Agent with Human Review
-    await runStep(1, async () => {
+    const step2Success = await runStep(1, async () => {
       const requirements = workflowSteps[0].results?.requirements || getDemoRequirements();
 
       const response = await fetch('/api/apex/test-design', {
@@ -387,6 +395,9 @@ export default function APEXDemoWorkflow() {
           target_language: 'python'
         })
       });
+      if (!response.ok) {
+        throw new Error(`Test Design Agent failed: ${response.status} ${response.statusText}`);
+      }
       const data = await response.json();
 
       setMetrics(prev => ({
@@ -413,8 +424,13 @@ export default function APEXDemoWorkflow() {
       return data;
     });
 
+    if (!step2Success) {
+      setIsRunning(false);
+      return;
+    }
+
     // Step 3: Execution Agent
-    await runStep(2, async () => {
+    const step3Success = await runStep(2, async () => {
       const testCases = workflowSteps[1].results?.test_suite?.test_cases || getDemoTestCases();
 
       const response = await fetch('/api/apex/execution', {
@@ -428,7 +444,15 @@ export default function APEXDemoWorkflow() {
           max_parallel_tests: 10
         })
       });
+      if (!response.ok) {
+        throw new Error(`Execution Agent failed: ${response.status} ${response.statusText}`);
+      }
       const data = await response.json();
+
+      // Check if execution returned an error
+      if (data.error) {
+        throw new Error(`Execution Agent error: ${data.error}`);
+      }
 
       setMetrics(prev => ({
         ...prev,
@@ -442,8 +466,13 @@ export default function APEXDemoWorkflow() {
       return data;
     });
 
+    if (!step3Success) {
+      setIsRunning(false);
+      return;
+    }
+
     // Step 4: Analysis Agent
-    await runStep(3, async () => {
+    const step4Success = await runStep(3, async () => {
       // Simulate analysis
       await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -456,8 +485,13 @@ export default function APEXDemoWorkflow() {
       };
     });
 
+    if (!step4Success) {
+      setIsRunning(false);
+      return;
+    }
+
     // Step 5: Compliance Agent - Detailed compliance verification
-    await runStep(4, async () => {
+    const step5Success = await runStep(4, async () => {
       // Simulate detailed compliance checks
       await new Promise(resolve => setTimeout(resolve, 2500));
 
@@ -533,13 +567,15 @@ export default function APEXDemoWorkflow() {
 
     setIsRunning(false);
 
-    // Save to Core Vault after completion
-    setTimeout(() => {
-      setSavedToVault(true);
-    }, 1000);
+    // Only save to Core Vault if all steps completed successfully
+    if (step5Success) {
+      setTimeout(() => {
+        setSavedToVault(true);
+      }, 1000);
+    }
   };
 
-  const runStep = async (stepIndex: number, action: () => Promise<any>) => {
+  const runStep = async (stepIndex: number, action: () => Promise<any>): Promise<boolean> => {
     setCurrentStep(stepIndex);
 
     // Update step status to running
@@ -562,6 +598,7 @@ export default function APEXDemoWorkflow() {
         updated[stepIndex].results = results;
         return updated;
       });
+      return true; // Success
     } catch (error) {
       // Update step status to error with message
       const errorMsg = error instanceof Error ? error.message : 'An unexpected error occurred';
@@ -571,6 +608,7 @@ export default function APEXDemoWorkflow() {
         updated[stepIndex].errorMessage = errorMsg;
         return updated;
       });
+      return false; // Failure - workflow should stop
     }
   };
 

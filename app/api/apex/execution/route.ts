@@ -160,7 +160,7 @@ async function executeTestBatch(
  */
 async function executeTestCase(testCase: any, environment: string): Promise<TestExecution> {
   const execution: TestExecution = {
-    execution_id: `EXEC-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    execution_id: `EXEC-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`,
     test_case_id: testCase.id,
     status: 'running',
     start_time: new Date().toISOString(),
@@ -179,16 +179,19 @@ async function executeTestCase(testCase: any, environment: string): Promise<Test
   await new Promise(resolve => setTimeout(resolve, Math.random() * 3000 + 1000));
 
   // Add execution logs
+  const testName = testCase.name || testCase.id || 'Unknown Test';
   execution.logs.push({
     timestamp: new Date().toISOString(),
     level: 'info',
-    message: `Starting test execution for ${testCase.name}`,
+    message: `Starting test execution for ${testName}`,
     source: 'ExecutionAgent'
   });
 
-  // Simulate test steps
-  for (let i = 0; i < (testCase.steps?.length || 3); i++) {
-    await new Promise(resolve => setTimeout(resolve, 500));
+  // Simulate test steps (use 3 steps if not provided)
+  const stepCount = testCase.steps?.length || 3;
+  for (let i = 0; i < stepCount; i++) {
+    // Minimal delay for demo performance
+    await new Promise(resolve => setTimeout(resolve, 50));
 
     execution.logs.push({
       timestamp: new Date().toISOString(),
@@ -220,7 +223,7 @@ async function executeTestCase(testCase: any, environment: string): Promise<Test
     execution.status = 'failed';
     execution.error_details = {
       error_type: 'AssertionError',
-      error_message: `Expected value did not match actual for ${testCase.name}`,
+      error_message: `Expected value did not match actual for ${testName}`,
       stack_trace: generateMockStackTrace(testCase),
       screenshot_url: `/screenshots/${execution.execution_id}/error.png`
     };
@@ -259,8 +262,9 @@ async function executeTestCase(testCase: any, environment: string): Promise<Test
  * Generate mock stack trace for failed tests
  */
 function generateMockStackTrace(testCase: any): string {
+  const testName = testCase.name || testCase.id || 'test_case';
   return `AssertionError: Expected true but got false
-    at TestCase.${testCase.name} (test-suite.py:45:12)
+    at TestCase.${testName} (test-suite.py:45:12)
     at TestRunner.execute (runner.py:123:8)
     at ExecutionAgent.run (execution.py:67:15)
     at Container.runTest (container.py:234:10)
