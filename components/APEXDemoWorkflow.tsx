@@ -25,7 +25,12 @@ import {
   Eye,
   Upload,
   Link2,
-  RefreshCw
+  RefreshCw,
+  Edit2,
+  RotateCcw,
+  MessageSquare,
+  ThumbsUp,
+  ThumbsDown
 } from 'lucide-react';
 
 interface WorkflowStep {
@@ -63,6 +68,10 @@ export default function APEXDemoWorkflow() {
   }>({ savingToVault: false, savingToJira: false, creatingJiraSuite: false, vaultSaved: false, jiraSaved: false, jiraSuiteCreated: false });
   const [showTestCases, setShowTestCases] = useState(false);
   const [showComplianceDetails, setShowComplianceDetails] = useState(false);
+  const [isRegenerating, setIsRegenerating] = useState(false);
+  const [regenerateCount, setRegenerateCount] = useState(0);
+  const [editingTestCase, setEditingTestCase] = useState<string | null>(null);
+  const [testCaseNotes, setTestCaseNotes] = useState<Record<string, string>>({});
   const [complianceResults, setComplianceResults] = useState<{
     section508: { status: string; checks: Array<{ name: string; status: string; details: string }> };
     fips: { status: string; checks: Array<{ name: string; status: string; details: string }> };
@@ -919,32 +928,122 @@ export default function APEXDemoWorkflow() {
 
       {/* Human-in-the-Loop Notification */}
       {showHumanReview && (
-        <div className="mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-400 rounded-lg animate-pulse">
-          <div className="flex items-center space-x-3">
-            <UserCheck className="h-6 w-6 text-orange-600" />
-            <div className="flex-1">
-              <h4 className="font-semibold text-gray-900 dark:text-white">
-                Human Review Required
-              </h4>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Test Engineer reviewing generated test cases for critical requirements...
-              </p>
+        <div className="mb-6 p-5 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 border-2 border-orange-400 rounded-xl shadow-lg">
+          <div className="flex items-start space-x-4">
+            <div className="p-2 bg-orange-100 dark:bg-orange-800/30 rounded-lg">
+              <UserCheck className="h-7 w-7 text-orange-600" />
             </div>
-            <button
-              onClick={() => {
-                setShowHumanReview(false);
-                setHumanReviewStep(null);
-                // Resolve the pending promise to continue the workflow
-                if (humanApprovalResolverRef.current) {
-                  humanApprovalResolverRef.current();
-                  humanApprovalResolverRef.current = null;
-                }
-              }}
-              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition text-sm font-medium"
-            >
-              Approve & Continue
-            </button>
+            <div className="flex-1">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="font-bold text-lg text-gray-900 dark:text-white">
+                  Human Review Required
+                </h4>
+                {regenerateCount > 0 && (
+                  <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                    Iteration #{regenerateCount + 1}
+                  </span>
+                )}
+              </div>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Review the AI-generated test cases below. You can approve them to continue, request regeneration with feedback, or edit individual test cases.
+              </p>
+
+              {/* Quick Stats */}
+              <div className="flex items-center space-x-4 mb-4 text-sm">
+                <div className="flex items-center space-x-1 text-green-600">
+                  <ThumbsUp className="h-4 w-4" />
+                  <span>{generatedTestCases.filter(tc => tc.status === 'passed').length} ready</span>
+                </div>
+                <div className="flex items-center space-x-1 text-red-600">
+                  <ThumbsDown className="h-4 w-4" />
+                  <span>{generatedTestCases.filter(tc => tc.status === 'failed').length} needs review</span>
+                </div>
+                <div className="flex items-center space-x-1 text-gray-500">
+                  <MessageSquare className="h-4 w-4" />
+                  <span>{Object.keys(testCaseNotes).length} notes added</span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  onClick={() => {
+                    setShowHumanReview(false);
+                    setHumanReviewStep(null);
+                    setRegenerateCount(0);
+                    setTestCaseNotes({});
+                    // Resolve the pending promise to continue the workflow
+                    if (humanApprovalResolverRef.current) {
+                      humanApprovalResolverRef.current();
+                      humanApprovalResolverRef.current = null;
+                    }
+                  }}
+                  className="flex items-center space-x-2 px-5 py-2.5 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-medium shadow-md"
+                >
+                  <CheckCircle className="h-4 w-4" />
+                  <span>Approve & Continue</span>
+                </button>
+
+                <button
+                  onClick={async () => {
+                    setIsRegenerating(true);
+                    // Simulate regeneration with slight delay
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+                    setRegenerateCount(prev => prev + 1);
+                    setIsRegenerating(false);
+                  }}
+                  disabled={isRegenerating}
+                  className="flex items-center space-x-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isRegenerating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>Regenerating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <RotateCcw className="h-4 w-4" />
+                      <span>Regenerate Tests</span>
+                    </>
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setEditingTestCase(editingTestCase ? null : 'all')}
+                  className={`flex items-center space-x-2 px-4 py-2.5 rounded-lg transition font-medium ${
+                    editingTestCase
+                      ? 'bg-purple-600 text-white'
+                      : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  <Edit2 className="h-4 w-4" />
+                  <span>{editingTestCase ? 'Done Editing' : 'Edit Test Cases'}</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    setShowHumanReview(false);
+                    setHumanReviewStep(null);
+                    // Skip without resolving - workflow will timeout/fail gracefully
+                  }}
+                  className="flex items-center space-x-2 px-4 py-2.5 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition"
+                >
+                  <XCircle className="h-4 w-4" />
+                  <span>Reject & Cancel</span>
+                </button>
+              </div>
+            </div>
           </div>
+
+          {/* Feedback Input for Regeneration */}
+          {isRegenerating && (
+            <div className="mt-4 pt-4 border-t border-orange-200 dark:border-orange-700">
+              <div className="flex items-center space-x-2 text-sm text-orange-700 dark:text-orange-300">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>AI is regenerating test cases with your feedback...</span>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -1332,7 +1431,7 @@ export default function APEXDemoWorkflow() {
                           </div>
 
                           {/* Test Cases Table */}
-                          <div className="max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800">
+                          <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800">
                             <table className="w-full text-sm">
                               <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0">
                                 <tr>
@@ -1341,13 +1440,24 @@ export default function APEXDemoWorkflow() {
                                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Requirement</th>
                                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
                                   <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                                  {editingTestCase && showHumanReview && (
+                                    <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                  )}
                                 </tr>
                               </thead>
                               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                                 {generatedTestCases.map(tc => (
-                                  <tr key={tc.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                  <tr key={tc.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 ${testCaseNotes[tc.id] ? 'bg-yellow-50 dark:bg-yellow-900/10' : ''}`}>
                                     <td className="px-3 py-2 font-mono text-xs text-gray-600 dark:text-gray-400">{tc.id}</td>
-                                    <td className="px-3 py-2 text-gray-800 dark:text-gray-200 text-xs">{tc.name}</td>
+                                    <td className="px-3 py-2 text-gray-800 dark:text-gray-200 text-xs">
+                                      <div>{tc.name}</div>
+                                      {testCaseNotes[tc.id] && (
+                                        <div className="mt-1 text-xs text-amber-600 dark:text-amber-400 flex items-center space-x-1">
+                                          <MessageSquare className="h-3 w-3" />
+                                          <span className="italic">{testCaseNotes[tc.id]}</span>
+                                        </div>
+                                      )}
+                                    </td>
                                     <td className="px-3 py-2">
                                       <a
                                         href={`https://progrediai.atlassian.net/browse/SCRUM-${tc.requirement.replace(/[^0-9]/g, '') || '1'}`}
@@ -1376,6 +1486,39 @@ export default function APEXDemoWorkflow() {
                                         <XCircle className="h-4 w-4 text-red-600 mx-auto" />
                                       )}
                                     </td>
+                                    {editingTestCase && showHumanReview && (
+                                      <td className="px-3 py-2 text-center">
+                                        <div className="flex items-center justify-center space-x-1">
+                                          <button
+                                            onClick={() => {
+                                              const note = prompt(`Add feedback for ${tc.id}:`, testCaseNotes[tc.id] || '');
+                                              if (note !== null) {
+                                                setTestCaseNotes(prev => ({
+                                                  ...prev,
+                                                  [tc.id]: note
+                                                }));
+                                              }
+                                            }}
+                                            className="p-1 text-blue-600 hover:bg-blue-100 rounded"
+                                            title="Add feedback"
+                                          >
+                                            <MessageSquare className="h-3.5 w-3.5" />
+                                          </button>
+                                          <button
+                                            onClick={() => {
+                                              setTestCaseNotes(prev => ({
+                                                ...prev,
+                                                [tc.id]: 'Flagged for regeneration'
+                                              }));
+                                            }}
+                                            className="p-1 text-orange-600 hover:bg-orange-100 rounded"
+                                            title="Flag for regeneration"
+                                          >
+                                            <RotateCcw className="h-3.5 w-3.5" />
+                                          </button>
+                                        </div>
+                                      </td>
+                                    )}
                                   </tr>
                                 ))}
                               </tbody>
