@@ -946,9 +946,12 @@ export default function DocsPage() {
       {/* Footer */}
       <div className="mt-auto border-t border-gray-700 bg-gray-800/50">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between text-sm text-gray-400">
+          <div className="flex flex-col sm:flex-row items-center justify-between text-sm text-gray-400 gap-2">
             <p>Progredi AI - Core APEX Technical Documentation</p>
             <p>Confidential - Navy-AIAT Phase 2 Evaluation</p>
+          </div>
+          <div className="text-center text-xs text-gray-500 mt-3 pt-3 border-t border-gray-700">
+            <p>&copy; 2025 Progredi Systems, LLC. All rights reserved.</p>
           </div>
         </div>
       </div>
