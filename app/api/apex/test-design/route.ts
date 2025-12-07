@@ -148,8 +148,8 @@ async function generateTestCasesForRequirement(requirement: any, language: strin
     });
   }
 
-  // Simulate AI processing
-  await new Promise(resolve => setTimeout(resolve, 500));
+  // Minimal delay for demo performance (reduced from 500ms to avoid timeout)
+  await new Promise(resolve => setTimeout(resolve, 10));
 
   return testCases;
 }
