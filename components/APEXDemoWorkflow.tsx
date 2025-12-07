@@ -948,133 +948,6 @@ export default function APEXDemoWorkflow() {
         </div>
       )}
 
-      {/* Generated Test Cases Display */}
-      {showTestCases && (
-        <div className="mb-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center space-x-2">
-              <Code className="h-5 w-5 text-green-600" />
-              <h3 className="font-semibold text-gray-900 dark:text-white">
-                Generated Test Cases ({generatedTestCases.length})
-              </h3>
-              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
-                AI Generated
-              </span>
-            </div>
-            <div className="flex items-center space-x-2">
-              {/* Save to Core Vault button */}
-              {testCaseSaveStatus.vaultSaved ? (
-                <a
-                  href={testCaseSaveStatus.vaultUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center space-x-1 px-3 py-1.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded text-xs font-medium"
-                >
-                  <Eye className="h-3 w-3" />
-                  <span>View in Vault</span>
-                </a>
-              ) : (
-                <button
-                  onClick={saveTestCasesToVault}
-                  disabled={testCaseSaveStatus.savingToVault}
-                  className="flex items-center space-x-1 px-3 py-1.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 rounded text-xs font-medium transition disabled:opacity-50"
-                >
-                  {testCaseSaveStatus.savingToVault ? (
-                    <RefreshCw className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <Upload className="h-3 w-3" />
-                  )}
-                  <span>{testCaseSaveStatus.savingToVault ? 'Saving...' : 'Save to Vault'}</span>
-                </button>
-              )}
-
-              {/* Sync to JIRA button */}
-              {/* Create Test Suite in JIRA (creates visible issues on board) */}
-              {testCaseSaveStatus.jiraSuiteCreated ? (
-                <a
-                  href={testCaseSaveStatus.jiraSuiteUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center space-x-1 px-3 py-1.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 rounded text-xs font-medium"
-                >
-                  <CheckCircle className="h-3 w-3" />
-                  <span>View {testCaseSaveStatus.jiraTestsCreated} Tests in JIRA</span>
-                  <ExternalLink className="h-3 w-3" />
-                </a>
-              ) : (
-                <button
-                  onClick={createJiraTestSuite}
-                  disabled={testCaseSaveStatus.creatingJiraSuite}
-                  className="flex items-center space-x-1 px-3 py-1.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50 rounded text-xs font-medium transition disabled:opacity-50"
-                >
-                  {testCaseSaveStatus.creatingJiraSuite ? (
-                    <RefreshCw className="h-3 w-3 animate-spin" />
-                  ) : (
-                    <ExternalLink className="h-3 w-3" />
-                  )}
-                  <span>{testCaseSaveStatus.creatingJiraSuite ? 'Creating...' : 'Create in JIRA Board'}</span>
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Test Cases Table */}
-          <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0">
-                <tr>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Test Case</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Requirement</th>
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
-                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                {generatedTestCases.map(tc => (
-                  <tr key={tc.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                    <td className="px-3 py-2 font-mono text-xs text-gray-600 dark:text-gray-400">{tc.id}</td>
-                    <td className="px-3 py-2 text-gray-800 dark:text-gray-200">{tc.name}</td>
-                    <td className="px-3 py-2">
-                      <a
-                        href={`https://progrediai.atlassian.net/browse/SCRUM-${tc.requirement.replace(/[^0-9]/g, '') || '1'}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-mono text-xs px-1.5 py-0.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded hover:bg-indigo-200 dark:hover:bg-indigo-900/50 hover:underline inline-flex items-center space-x-1"
-                        title={`Open ${tc.requirement} in JIRA`}
-                      >
-                        <span>{tc.requirement}</span>
-                        <ExternalLink className="h-2.5 w-2.5" />
-                      </a>
-                    </td>
-                    <td className="px-3 py-2">
-                      <span className={`text-xs px-1.5 py-0.5 rounded ${
-                        tc.priority === 'Critical' ? 'bg-red-100 text-red-700' :
-                        tc.priority === 'High' ? 'bg-orange-100 text-orange-700' :
-                        'bg-gray-100 text-gray-600'
-                      }`}>
-                        {tc.priority}
-                      </span>
-                    </td>
-                    <td className="px-3 py-2 text-center">
-                      {tc.status === 'passed' ? (
-                        <CheckCircle className="h-4 w-4 text-green-600 mx-auto" />
-                      ) : (
-                        <XCircle className="h-4 w-4 text-red-600 mx-auto" />
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="mt-2 text-xs text-gray-500 flex items-center justify-between">
-            <span>Showing sample of {generatedTestCases.length} generated test cases (127 total)</span>
-            <span className="text-green-600">{generatedTestCases.filter(tc => tc.status === 'passed').length} passed, {generatedTestCases.filter(tc => tc.status === 'failed').length} failed</span>
-          </div>
-        </div>
-      )}
-
       {/* Workflow Steps */}
       <div className="space-y-4 mb-8">
         {workflowSteps.map((step, index) => {
@@ -1390,6 +1263,130 @@ export default function APEXDemoWorkflow() {
                           </div>
                         ))}
                       </div>
+
+                      {/* Generated Test Cases Table with Actions */}
+                      {showTestCases && (
+                        <div className="mt-4 pt-4 border-t border-purple-200 dark:border-purple-700">
+                          <div className="flex items-center justify-between mb-3">
+                            <h5 className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center space-x-2">
+                              <Code className="h-4 w-4 text-green-600" />
+                              <span>Generated Test Cases ({generatedTestCases.length})</span>
+                              <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                                AI Generated
+                              </span>
+                            </h5>
+                            <div className="flex items-center space-x-2">
+                              {/* Save to Core Vault button */}
+                              {testCaseSaveStatus.vaultSaved ? (
+                                <a
+                                  href={testCaseSaveStatus.vaultUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center space-x-1 px-3 py-1.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded text-xs font-medium"
+                                >
+                                  <Eye className="h-3 w-3" />
+                                  <span>View in Vault</span>
+                                </a>
+                              ) : (
+                                <button
+                                  onClick={saveTestCasesToVault}
+                                  disabled={testCaseSaveStatus.savingToVault}
+                                  className="flex items-center space-x-1 px-3 py-1.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50 rounded text-xs font-medium transition disabled:opacity-50"
+                                >
+                                  {testCaseSaveStatus.savingToVault ? (
+                                    <RefreshCw className="h-3 w-3 animate-spin" />
+                                  ) : (
+                                    <Upload className="h-3 w-3" />
+                                  )}
+                                  <span>{testCaseSaveStatus.savingToVault ? 'Saving...' : 'Save to Vault'}</span>
+                                </button>
+                              )}
+
+                              {/* Create Test Suite in JIRA */}
+                              {testCaseSaveStatus.jiraSuiteCreated ? (
+                                <a
+                                  href={testCaseSaveStatus.jiraSuiteUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="flex items-center space-x-1 px-3 py-1.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 rounded text-xs font-medium"
+                                >
+                                  <CheckCircle className="h-3 w-3" />
+                                  <span>View {testCaseSaveStatus.jiraTestsCreated} Tests in JIRA</span>
+                                  <ExternalLink className="h-3 w-3" />
+                                </a>
+                              ) : (
+                                <button
+                                  onClick={createJiraTestSuite}
+                                  disabled={testCaseSaveStatus.creatingJiraSuite}
+                                  className="flex items-center space-x-1 px-3 py-1.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50 rounded text-xs font-medium transition disabled:opacity-50"
+                                >
+                                  {testCaseSaveStatus.creatingJiraSuite ? (
+                                    <RefreshCw className="h-3 w-3 animate-spin" />
+                                  ) : (
+                                    <ExternalLink className="h-3 w-3" />
+                                  )}
+                                  <span>{testCaseSaveStatus.creatingJiraSuite ? 'Creating...' : 'Create in JIRA Board'}</span>
+                                </button>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Test Cases Table */}
+                          <div className="max-h-48 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800">
+                            <table className="w-full text-sm">
+                              <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0">
+                                <tr>
+                                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Test Case</th>
+                                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Requirement</th>
+                                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
+                                  <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                                </tr>
+                              </thead>
+                              <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                                {generatedTestCases.map(tc => (
+                                  <tr key={tc.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                    <td className="px-3 py-2 font-mono text-xs text-gray-600 dark:text-gray-400">{tc.id}</td>
+                                    <td className="px-3 py-2 text-gray-800 dark:text-gray-200 text-xs">{tc.name}</td>
+                                    <td className="px-3 py-2">
+                                      <a
+                                        href={`https://progrediai.atlassian.net/browse/SCRUM-${tc.requirement.replace(/[^0-9]/g, '') || '1'}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="font-mono text-xs px-1.5 py-0.5 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300 rounded hover:bg-indigo-200 dark:hover:bg-indigo-900/50 hover:underline inline-flex items-center space-x-1"
+                                        title={`Open ${tc.requirement} in JIRA`}
+                                      >
+                                        <span>{tc.requirement}</span>
+                                        <ExternalLink className="h-2.5 w-2.5" />
+                                      </a>
+                                    </td>
+                                    <td className="px-3 py-2">
+                                      <span className={`text-xs px-1.5 py-0.5 rounded ${
+                                        tc.priority === 'Critical' ? 'bg-red-100 text-red-700' :
+                                        tc.priority === 'High' ? 'bg-orange-100 text-orange-700' :
+                                        'bg-gray-100 text-gray-600'
+                                      }`}>
+                                        {tc.priority}
+                                      </span>
+                                    </td>
+                                    <td className="px-3 py-2 text-center">
+                                      {tc.status === 'passed' ? (
+                                        <CheckCircle className="h-4 w-4 text-green-600 mx-auto" />
+                                      ) : (
+                                        <XCircle className="h-4 w-4 text-red-600 mx-auto" />
+                                      )}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                          <div className="mt-2 text-xs text-gray-500 flex items-center justify-between">
+                            <span>Showing sample of {generatedTestCases.length} generated test cases (127 total)</span>
+                            <span className="text-green-600">{generatedTestCases.filter(tc => tc.status === 'passed').length} passed, {generatedTestCases.filter(tc => tc.status === 'failed').length} failed</span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
 
