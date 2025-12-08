@@ -1751,21 +1751,97 @@ export default function APEXDemoWorkflow() {
             </div>
           </div>
 
-          {/* Export Options & Core Vault Integration */}
-          <div className="mt-6 flex items-center justify-between">
+          {/* Core Vault Test Reports */}
+          <div className="mt-6 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-4 border border-indigo-200 dark:border-indigo-800">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-2">
+                <Archive className="h-5 w-5 text-indigo-600" />
+                <h4 className="font-semibold text-gray-900 dark:text-white">Test Reports in Core Vault</h4>
+              </div>
+              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">6 Reports Available</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              <a
+                href="https://corevault.progrediai.com/view/cc4ce3ac-a7ca-46b0-b287-b9becea68fd7"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-indigo-400 hover:shadow-md transition group"
+              >
+                <div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-indigo-600">Full Compliance Suite</span>
+                  <span className="text-xs text-gray-500 block">RPT-2025-006 • All 5 UCs</span>
+                </div>
+                <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-indigo-600" />
+              </a>
+              <a
+                href="https://corevault.progrediai.com/view/f177e86b-41bf-484f-965d-e04c1b2b15dc"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-indigo-400 hover:shadow-md transition group"
+              >
+                <div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-indigo-600">UC1: Add to Cart</span>
+                  <span className="text-xs text-gray-500 block">RPT-2025-001 • 45 tests</span>
+                </div>
+                <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-indigo-600" />
+              </a>
+              <a
+                href="https://corevault.progrediai.com/view/e8cb922d-481b-4264-99b9-e19d671eda0d"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-indigo-400 hover:shadow-md transition group"
+              >
+                <div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-indigo-600">UC2: Wishlist</span>
+                  <span className="text-xs text-gray-500 block">RPT-2025-003 • 38 tests</span>
+                </div>
+                <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-indigo-600" />
+              </a>
+              <a
+                href="https://corevault.progrediai.com/view/e165f908-03c8-4606-b14e-a44d9eef8233"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-indigo-400 hover:shadow-md transition group"
+              >
+                <div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-indigo-600">UC3: Search Filters</span>
+                  <span className="text-xs text-gray-500 block">RPT-2025-004 • 50 tests</span>
+                </div>
+                <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-indigo-600" />
+              </a>
+              <a
+                href="https://corevault.progrediai.com/view/f24f498f-21e1-49e0-8189-601f44ea2b01"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-indigo-400 hover:shadow-md transition group"
+              >
+                <div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-indigo-600">UC4: Login/Logout</span>
+                  <span className="text-xs text-gray-500 block">RPT-2025-002 • 52 tests</span>
+                </div>
+                <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-indigo-600" />
+              </a>
+              <a
+                href="https://corevault.progrediai.com/view/6c7107d3-09f8-43cb-ace5-46459dc807de"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-indigo-400 hover:shadow-md transition group"
+              >
+                <div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-indigo-600">UC5: Profile Management</span>
+                  <span className="text-xs text-gray-500 block">RPT-2025-005 • 42 tests</span>
+                </div>
+                <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-indigo-600" />
+              </a>
+            </div>
+          </div>
+
+          {/* Export Options */}
+          <div className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="text-sm text-gray-500">
               Demo completed at {new Date().toLocaleTimeString()}
             </div>
-            <div className="flex space-x-3">
-              {savedToVault && (
-                <div className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg">
-                  <Archive className="h-5 w-5 text-blue-600" />
-                  <div>
-                    <span className="text-sm font-semibold text-blue-900">Saved to Core Vault</span>
-                    <span className="text-xs text-blue-700 block">Report ID: RPT-2024-{String(Math.floor(Math.random() * 900) + 100).padStart(3, '0')}</span>
-                  </div>
-                </div>
-              )}
+            <div className="flex flex-wrap gap-3">
               <a
                 href="https://progrediai.atlassian.net/jira/software/projects/SCRUM/boards/1"
                 target="_blank"
@@ -1782,7 +1858,7 @@ export default function APEXDemoWorkflow() {
                 className="px-4 py-2 text-sm bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition flex items-center space-x-2"
               >
                 <Eye className="h-4 w-4" />
-                <span>View in Core Vault</span>
+                <span>All Core Vault Artifacts</span>
               </a>
               <button className="px-4 py-2 text-sm bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition flex items-center space-x-2">
                 <Download className="h-4 w-4" />
