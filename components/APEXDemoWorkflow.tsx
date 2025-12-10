@@ -1061,6 +1061,158 @@ export default function APEXDemoWorkflow() {
               </div>
             </div>
           )}
+
+          {/* Inline Test Cases Table for Human Review */}
+          <div className="mt-4 pt-4 border-t border-orange-200 dark:border-orange-700">
+            <div className="flex items-center justify-between mb-3">
+              <h5 className="text-sm font-semibold text-gray-700 dark:text-gray-300 flex items-center space-x-2">
+                <Code className="h-4 w-4 text-purple-600" />
+                <span>Generated Test Cases ({generatedTestCases.length})</span>
+              </h5>
+              <button
+                onClick={() => setEditingTestCase(editingTestCase ? null : 'all')}
+                className={`flex items-center space-x-1 px-3 py-1.5 rounded text-xs font-medium transition ${
+                  editingTestCase
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+              >
+                <Edit2 className="h-3 w-3" />
+                <span>{editingTestCase ? 'Done Editing' : 'Edit Tests'}</span>
+              </button>
+            </div>
+
+            <div className="max-h-64 overflow-y-auto border border-gray-200 dark:border-gray-600 rounded bg-white dark:bg-gray-800">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0">
+                  <tr>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Test Case</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
+                    <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
+                    {editingTestCase && (
+                      <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">Actions</th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                  {generatedTestCases.map(tc => {
+                    const isEditing = editingTestCaseId === tc.id;
+                    const editedData = editedTestCases[tc.id] || { name: tc.name, priority: tc.priority };
+                    const displayName = editedTestCases[tc.id]?.name || tc.name;
+                    const displayPriority = editedTestCases[tc.id]?.priority || tc.priority;
+
+                    return (
+                      <tr key={tc.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 ${isEditing ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}>
+                        <td className="px-3 py-2 font-mono text-xs text-gray-600 dark:text-gray-400">{tc.id}</td>
+                        <td className="px-3 py-2 text-gray-800 dark:text-gray-200 text-xs">
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              value={editedData.name}
+                              onChange={(e) => setEditedTestCases(prev => ({
+                                ...prev,
+                                [tc.id]: { ...editedData, name: e.target.value }
+                              }))}
+                              className="w-full px-2 py-1 text-xs border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                              autoFocus
+                            />
+                          ) : (
+                            <div>
+                              {displayName}
+                              {editedTestCases[tc.id] && (
+                                <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">(edited)</span>
+                              )}
+                            </div>
+                          )}
+                        </td>
+                        <td className="px-3 py-2">
+                          {isEditing ? (
+                            <select
+                              value={editedData.priority}
+                              onChange={(e) => setEditedTestCases(prev => ({
+                                ...prev,
+                                [tc.id]: { ...editedData, priority: e.target.value }
+                              }))}
+                              className="text-xs px-1.5 py-1 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                            >
+                              <option value="Critical">Critical</option>
+                              <option value="High">High</option>
+                              <option value="Medium">Medium</option>
+                              <option value="Low">Low</option>
+                            </select>
+                          ) : (
+                            <span className={`text-xs px-1.5 py-0.5 rounded ${
+                              displayPriority === 'Critical' ? 'bg-red-100 text-red-700' :
+                              displayPriority === 'High' ? 'bg-orange-100 text-orange-700' :
+                              displayPriority === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                              'bg-gray-100 text-gray-600'
+                            }`}>
+                              {displayPriority}
+                            </span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2 text-center">
+                          {tc.status === 'passed' ? (
+                            <CheckCircle className="h-4 w-4 text-green-600 mx-auto" />
+                          ) : (
+                            <XCircle className="h-4 w-4 text-red-600 mx-auto" />
+                          )}
+                        </td>
+                        {editingTestCase && (
+                          <td className="px-3 py-2 text-center">
+                            <div className="flex items-center justify-center space-x-1">
+                              {isEditing ? (
+                                <>
+                                  <button
+                                    onClick={() => setEditingTestCaseId(null)}
+                                    className="p-1 text-green-600 hover:bg-green-100 rounded"
+                                    title="Save changes"
+                                  >
+                                    <Save className="h-3.5 w-3.5" />
+                                  </button>
+                                  <button
+                                    onClick={() => {
+                                      setEditedTestCases(prev => {
+                                        const newState = { ...prev };
+                                        delete newState[tc.id];
+                                        return newState;
+                                      });
+                                      setEditingTestCaseId(null);
+                                    }}
+                                    className="p-1 text-red-600 hover:bg-red-100 rounded"
+                                    title="Cancel"
+                                  >
+                                    <X className="h-3.5 w-3.5" />
+                                  </button>
+                                </>
+                              ) : (
+                                <button
+                                  onClick={() => {
+                                    if (!editedTestCases[tc.id]) {
+                                      setEditedTestCases(prev => ({
+                                        ...prev,
+                                        [tc.id]: { name: tc.name, priority: tc.priority }
+                                      }));
+                                    }
+                                    setEditingTestCaseId(tc.id);
+                                  }}
+                                  className="p-1 text-purple-600 hover:bg-purple-100 rounded"
+                                  title="Edit test case"
+                                >
+                                  <Pencil className="h-3.5 w-3.5" />
+                                </button>
+                              )}
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       )}
 
