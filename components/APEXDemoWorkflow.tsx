@@ -30,7 +30,10 @@ import {
   RotateCcw,
   MessageSquare,
   ThumbsUp,
-  ThumbsDown
+  ThumbsDown,
+  Save,
+  X,
+  Pencil
 } from 'lucide-react';
 
 interface WorkflowStep {
@@ -71,7 +74,9 @@ export default function APEXDemoWorkflow() {
   const [isRegenerating, setIsRegenerating] = useState(false);
   const [regenerateCount, setRegenerateCount] = useState(0);
   const [editingTestCase, setEditingTestCase] = useState<string | null>(null);
+  const [editingTestCaseId, setEditingTestCaseId] = useState<string | null>(null);
   const [testCaseNotes, setTestCaseNotes] = useState<Record<string, string>>({});
+  const [editedTestCases, setEditedTestCases] = useState<Record<string, { name: string; priority: string; steps?: string }>>({});
   const [complianceResults, setComplianceResults] = useState<{
     section508: { status: string; checks: Array<{ name: string; status: string; details: string }> };
     fips: { status: string; checks: Array<{ name: string; status: string; details: string }> };
@@ -1387,6 +1392,19 @@ export default function APEXDemoWorkflow() {
                               </span>
                             </h5>
                             <div className="flex items-center space-x-2">
+                              {/* Edit Test Cases Toggle */}
+                              <button
+                                onClick={() => setEditingTestCase(editingTestCase ? null : 'all')}
+                                className={`flex items-center space-x-1 px-3 py-1.5 rounded text-xs font-medium transition ${
+                                  editingTestCase
+                                    ? 'bg-purple-600 text-white'
+                                    : 'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                }`}
+                              >
+                                <Edit2 className="h-3 w-3" />
+                                <span>{editingTestCase ? 'Done Editing' : 'Edit Tests'}</span>
+                              </button>
+
                               {/* Save to Core Vault button */}
                               {testCaseSaveStatus.vaultSaved ? (
                                 <a
@@ -1452,18 +1470,42 @@ export default function APEXDemoWorkflow() {
                                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Requirement</th>
                                   <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Priority</th>
                                   <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">Status</th>
-                                  {editingTestCase && showHumanReview && (
+                                  {editingTestCase && (
                                     <th className="px-3 py-2 text-center text-xs font-medium text-gray-500 uppercase">Actions</th>
                                   )}
                                 </tr>
                               </thead>
                               <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                                {generatedTestCases.map(tc => (
-                                  <tr key={tc.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 ${testCaseNotes[tc.id] ? 'bg-yellow-50 dark:bg-yellow-900/10' : ''}`}>
+                                {generatedTestCases.map(tc => {
+                                  const isEditing = editingTestCaseId === tc.id;
+                                  const editedData = editedTestCases[tc.id] || { name: tc.name, priority: tc.priority };
+                                  const displayName = editedTestCases[tc.id]?.name || tc.name;
+                                  const displayPriority = editedTestCases[tc.id]?.priority || tc.priority;
+
+                                  return (
+                                  <tr key={tc.id} className={`hover:bg-gray-50 dark:hover:bg-gray-700/50 ${isEditing ? 'bg-blue-50 dark:bg-blue-900/20' : testCaseNotes[tc.id] ? 'bg-yellow-50 dark:bg-yellow-900/10' : ''}`}>
                                     <td className="px-3 py-2 font-mono text-xs text-gray-600 dark:text-gray-400">{tc.id}</td>
                                     <td className="px-3 py-2 text-gray-800 dark:text-gray-200 text-xs">
-                                      <div>{tc.name}</div>
-                                      {testCaseNotes[tc.id] && (
+                                      {isEditing ? (
+                                        <input
+                                          type="text"
+                                          value={editedData.name}
+                                          onChange={(e) => setEditedTestCases(prev => ({
+                                            ...prev,
+                                            [tc.id]: { ...editedData, name: e.target.value }
+                                          }))}
+                                          className="w-full px-2 py-1 text-xs border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                                          autoFocus
+                                        />
+                                      ) : (
+                                        <div>
+                                          {displayName}
+                                          {editedTestCases[tc.id] && (
+                                            <span className="ml-2 text-xs text-blue-600 dark:text-blue-400">(edited)</span>
+                                          )}
+                                        </div>
+                                      )}
+                                      {testCaseNotes[tc.id] && !isEditing && (
                                         <div className="mt-1 text-xs text-amber-600 dark:text-amber-400 flex items-center space-x-1">
                                           <MessageSquare className="h-3 w-3" />
                                           <span className="italic">{testCaseNotes[tc.id]}</span>
@@ -1483,13 +1525,30 @@ export default function APEXDemoWorkflow() {
                                       </a>
                                     </td>
                                     <td className="px-3 py-2">
-                                      <span className={`text-xs px-1.5 py-0.5 rounded ${
-                                        tc.priority === 'Critical' ? 'bg-red-100 text-red-700' :
-                                        tc.priority === 'High' ? 'bg-orange-100 text-orange-700' :
-                                        'bg-gray-100 text-gray-600'
-                                      }`}>
-                                        {tc.priority}
-                                      </span>
+                                      {isEditing ? (
+                                        <select
+                                          value={editedData.priority}
+                                          onChange={(e) => setEditedTestCases(prev => ({
+                                            ...prev,
+                                            [tc.id]: { ...editedData, priority: e.target.value }
+                                          }))}
+                                          className="text-xs px-1.5 py-1 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600"
+                                        >
+                                          <option value="Critical">Critical</option>
+                                          <option value="High">High</option>
+                                          <option value="Medium">Medium</option>
+                                          <option value="Low">Low</option>
+                                        </select>
+                                      ) : (
+                                        <span className={`text-xs px-1.5 py-0.5 rounded ${
+                                          displayPriority === 'Critical' ? 'bg-red-100 text-red-700' :
+                                          displayPriority === 'High' ? 'bg-orange-100 text-orange-700' :
+                                          displayPriority === 'Medium' ? 'bg-yellow-100 text-yellow-700' :
+                                          'bg-gray-100 text-gray-600'
+                                        }`}>
+                                          {displayPriority}
+                                        </span>
+                                      )}
                                     </td>
                                     <td className="px-3 py-2 text-center">
                                       {tc.status === 'passed' ? (
@@ -1498,41 +1557,90 @@ export default function APEXDemoWorkflow() {
                                         <XCircle className="h-4 w-4 text-red-600 mx-auto" />
                                       )}
                                     </td>
-                                    {editingTestCase && showHumanReview && (
+                                    {editingTestCase && (
                                       <td className="px-3 py-2 text-center">
                                         <div className="flex items-center justify-center space-x-1">
-                                          <button
-                                            onClick={() => {
-                                              const note = prompt(`Add feedback for ${tc.id}:`, testCaseNotes[tc.id] || '');
-                                              if (note !== null) {
-                                                setTestCaseNotes(prev => ({
-                                                  ...prev,
-                                                  [tc.id]: note
-                                                }));
-                                              }
-                                            }}
-                                            className="p-1 text-blue-600 hover:bg-blue-100 rounded"
-                                            title="Add feedback"
-                                          >
-                                            <MessageSquare className="h-3.5 w-3.5" />
-                                          </button>
-                                          <button
-                                            onClick={() => {
-                                              setTestCaseNotes(prev => ({
-                                                ...prev,
-                                                [tc.id]: 'Flagged for regeneration'
-                                              }));
-                                            }}
-                                            className="p-1 text-orange-600 hover:bg-orange-100 rounded"
-                                            title="Flag for regeneration"
-                                          >
-                                            <RotateCcw className="h-3.5 w-3.5" />
-                                          </button>
+                                          {isEditing ? (
+                                            <>
+                                              <button
+                                                onClick={() => {
+                                                  // Save is automatic via state - just exit edit mode
+                                                  setEditingTestCaseId(null);
+                                                }}
+                                                className="p-1 text-green-600 hover:bg-green-100 rounded"
+                                                title="Save changes"
+                                              >
+                                                <Save className="h-3.5 w-3.5" />
+                                              </button>
+                                              <button
+                                                onClick={() => {
+                                                  // Cancel - remove edits for this test case
+                                                  setEditedTestCases(prev => {
+                                                    const newState = { ...prev };
+                                                    delete newState[tc.id];
+                                                    return newState;
+                                                  });
+                                                  setEditingTestCaseId(null);
+                                                }}
+                                                className="p-1 text-red-600 hover:bg-red-100 rounded"
+                                                title="Cancel"
+                                              >
+                                                <X className="h-3.5 w-3.5" />
+                                              </button>
+                                            </>
+                                          ) : (
+                                            <>
+                                              <button
+                                                onClick={() => {
+                                                  // Start editing - initialize with current values
+                                                  if (!editedTestCases[tc.id]) {
+                                                    setEditedTestCases(prev => ({
+                                                      ...prev,
+                                                      [tc.id]: { name: tc.name, priority: tc.priority }
+                                                    }));
+                                                  }
+                                                  setEditingTestCaseId(tc.id);
+                                                }}
+                                                className="p-1 text-purple-600 hover:bg-purple-100 rounded"
+                                                title="Edit test case"
+                                              >
+                                                <Pencil className="h-3.5 w-3.5" />
+                                              </button>
+                                              <button
+                                                onClick={() => {
+                                                  const note = prompt(`Add feedback for ${tc.id}:`, testCaseNotes[tc.id] || '');
+                                                  if (note !== null) {
+                                                    setTestCaseNotes(prev => ({
+                                                      ...prev,
+                                                      [tc.id]: note
+                                                    }));
+                                                  }
+                                                }}
+                                                className="p-1 text-blue-600 hover:bg-blue-100 rounded"
+                                                title="Add feedback"
+                                              >
+                                                <MessageSquare className="h-3.5 w-3.5" />
+                                              </button>
+                                              <button
+                                                onClick={() => {
+                                                  setTestCaseNotes(prev => ({
+                                                    ...prev,
+                                                    [tc.id]: 'Flagged for regeneration'
+                                                  }));
+                                                }}
+                                                className="p-1 text-orange-600 hover:bg-orange-100 rounded"
+                                                title="Flag for regeneration"
+                                              >
+                                                <RotateCcw className="h-3.5 w-3.5" />
+                                              </button>
+                                            </>
+                                          )}
                                         </div>
                                       </td>
                                     )}
                                   </tr>
-                                ))}
+                                  );
+                                })}
                               </tbody>
                             </table>
                           </div>
